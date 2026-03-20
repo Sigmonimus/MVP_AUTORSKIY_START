@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="primary_text">#DE000000</color>
+    <color name="secondary_text">#8A000000</color>
+    <color name="quote_background">#FFF3E0</color>
+    <color name="warning_background">#FFEBEE</color>
+    <!-- Основной фиолетовый -->
+    <color name="primary">#FF6200EE</color>
+    <!-- Светлый фиолетовый для обводки карточек -->
+    <color name="primary_light">#E1BEE7</color>
+    <!-- Мягкий лавандовый фон -->
+    <color name="soft_lavender">#E6E6FA</color>
+    <color name="important_text">#4A154B</color>
+    <color name="highlight_background">#F0E6FF</color>
+    <!-- Цвета для теста -->
+    <color name="correct_green">#4CAF50</color>
+    <color name="wrong_red">#F44336</color>
+</resources>

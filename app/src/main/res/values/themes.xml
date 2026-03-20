@@ -1,0 +1,22 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.MVP_AUTORSKIY_START" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+    </style>
+
+    <style name="Theme.MVP_AUTORSKIY_START" parent="Base.Theme.MVP_AUTORSKIY_START" />
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <!-- Цвет фона заставки -->
+        <item name="android:windowSplashScreenBackground">@color/white</item>
+
+        <!-- Твой логотип (вектор или картинка) -->
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+
+        <!-- Продолжительность анимации (рекомендуется не больше 1000 мс) -->
+        <item name="android:windowSplashScreenAnimationDuration">1000</item>
+
+        <!-- Цвет фона под иконкой (если нужен контраст) -->
+        <item name="android:windowSplashScreenIconBackgroundColor">@color/white</item>
+    </style>
+</resources>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/baseline_home_24"
+            android:title="Главная" />
+        <item
+            android:id="@+id/nav_theory"
+            android:icon="@drawable/baseline_menu_book_24"
+            android:title="Теория" />
+        <item
+            android:id="@+id/nav_practice"
+            android:icon="@drawable/outline_back_hand_24"
+            android:title="Практика" />
+        <item
+            android:id="@+id/nav_test"
+            android:icon="@drawable/outline_award_star_24"
+            android:title="Тест" />
+        <item
+            android:id="@+id/nav_library"
+            android:icon="@drawable/outline_bookmarks_24"
+            android:title="Библиотека аргументов" />
+        <item
+            android:id="@+id/nav_authors"
+            android:icon="@drawable/outline_assignment_ind_24"
+            android:title="Авторы и биография" />
+        <item
+            android:id="@+id/nav_favorites"
+            android:icon="@drawable/outline_bookmark_add_24"
+            android:title="Избранное" />
+        <item
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/outline_account_circle_24"
+            android:title="Профиль" />
+    </group>
+</menu>
