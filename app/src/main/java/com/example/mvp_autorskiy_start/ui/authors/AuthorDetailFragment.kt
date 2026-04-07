@@ -1,13 +1,11 @@
 package com.example.mvp_autorskiy_start.ui.authors
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.example.mvp_autorskiy_start.R
 import com.example.mvp_autorskiy_start.databinding.FragmentAuthorDetailBinding
 import com.example.mvp_autorskiy_start.data.models.Author
 import com.google.android.material.tabs.TabLayoutMediator
@@ -42,26 +40,17 @@ class AuthorDetailFragment : Fragment() {
         (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding.collapsingToolbar.title = shortenName(author.name)
 
-        try {
+        val pagerAdapter = AuthorPagerAdapter(requireActivity(), author)
+        binding.viewPager.adapter = pagerAdapter
 
-            val pagerAdapter = AuthorPagerAdapter(requireActivity(), author)
-            binding.viewPager.adapter = pagerAdapter
-
-            TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
-                tab.text = when (position) {
-                    0 -> "Биография"
-                    1 -> "Произведения (${author.works.size})"
-                    2 -> "Аргументы (${author.works.sumOf { it.arguments.size }})"
-                    else -> ""
-                }
-            }.attach()
-        } catch (e: Exception) {
-            Log.e("AuthorDetail", "ViewPager or TabLayout not found in layout. Please check fragment_author_detail.xml")
-            val bioFragment = AuthorBioFragment.newInstance(author.bio)
-            childFragmentManager.beginTransaction()
-                .replace(R.id.contentContainer, bioFragment)
-                .commit()
-        }
+        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
+            tab.text = when (position) {
+                0 -> "Биография"
+                1 -> "Произведения (${author.works.size})"
+                2 -> "Аргументы (${author.works.sumOf { it.arguments.size }})"
+                else -> ""
+            }
+        }.attach()
     }
 
     override fun onDestroyView() {
@@ -78,6 +67,7 @@ class AuthorDetailFragment : Fragment() {
             return fragment
         }
     }
+
     private fun shortenName(fullName: String): String {
         val parts = fullName.split(" ")
         return when (parts.size) {
