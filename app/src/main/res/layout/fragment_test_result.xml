@@ -10,9 +10,9 @@
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="16dp"
+        app:cardCornerRadius="24dp"
         app:cardElevation="8dp"
-        android:layout_marginBottom="24dp">
+        app:cardBackgroundColor="?attr/colorSurface">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -26,15 +26,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Результат"
-                android:textSize="28sp"
+                android:textSize="32sp"
                 android:textStyle="bold"
+                android:textColor="?android:attr/textColorPrimary"
                 android:layout_marginBottom="16dp" />
 
             <TextView
                 android:id="@+id/tvScore"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="56sp"
+                android:textSize="64sp"
                 android:textStyle="bold"
                 android:textColor="?attr/colorPrimary" />
 
@@ -44,6 +45,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="18sp"
                 android:gravity="center"
+                android:textColor="?android:attr/textColorSecondary"
                 android:layout_marginTop="16dp" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
@@ -53,7 +55,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Завершить"
+        android:layout_marginTop="32dp"
         app:icon="@drawable/ic_check"
         app:iconGravity="textStart" />
-
 </LinearLayout>

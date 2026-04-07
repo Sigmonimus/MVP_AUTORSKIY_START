@@ -20,7 +20,7 @@
             android:gravity="center"
             android:layout_marginBottom="24dp" />
 
-        <!-- Аватар и имя -->
+        <!-- Аватар, имя и кнопка -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -43,7 +43,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:gravity="start">
 
                 <TextView
                     android:id="@+id/tvUserName"
@@ -51,93 +52,25 @@
                     android:layout_height="wrap_content"
                     android:text="Александр Сергеевич"
                     android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:padding="8dp" />
 
-                <Button
-                    android:id="@+id/btnEditName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Редактировать профиль"
-                    style="@style/Widget.Material3.Button.TextButton"
-                    android:textColor="?attr/colorPrimary" />
             </LinearLayout>
         </LinearLayout>
 
-        <!-- Выбор аватара -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Выберите своего аватара"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp" />
-
-        <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
-
-                <ImageView
-                    android:id="@+id/avatarPushkin"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:src="@drawable/ic_pushkin"
-                    android:padding="4dp"
-                    android:background="?android:attr/selectableItemBackgroundBorderless"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:layout_marginEnd="8dp"
-                    android:contentDescription="Пушкин" />
-
-                <ImageView
-                    android:id="@+id/avatarTolstoy"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:src="@drawable/ic_tolstoy"
-                    android:padding="4dp"
-                    android:background="?android:attr/selectableItemBackgroundBorderless"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:layout_marginEnd="8dp"
-                    android:contentDescription="Толстой" />
-
-                <ImageView
-                    android:id="@+id/avatarDostoevsky"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:src="@drawable/ic_dostoevsky"
-                    android:padding="4dp"
-                    android:background="?android:attr/selectableItemBackgroundBorderless"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:layout_marginEnd="8dp"
-                    android:contentDescription="Достоевский" />
-
-                <ImageView
-                    android:id="@+id/avatarChekhov"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:src="@drawable/ic_chekhov"
-                    android:padding="4dp"
-                    android:background="?android:attr/selectableItemBackgroundBorderless"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:contentDescription="Чехов" />
-            </LinearLayout>
-        </HorizontalScrollView>
-
-        <!-- Email -->
+        <!-- Email (кликабельный блок) -->
         <LinearLayout
+            android:id="@+id/llEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?android:attr/selectableItemBackground"
             android:layout_marginBottom="16dp">
 
             <LinearLayout
@@ -161,25 +94,18 @@
                     android:textSize="16sp" />
             </LinearLayout>
 
-            <ImageView
-                android:id="@+id/btnEditEmail"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_edit"
-                android:padding="4dp"
-                android:background="?android:attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true"
-                android:layout_marginStart="8dp"
-                android:contentDescription="Редактировать email" />
         </LinearLayout>
 
         <!-- Язык приложения -->
         <LinearLayout
+            android:id="@+id/llLanguage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?android:attr/selectableItemBackground"
             android:layout_marginBottom="16dp">
 
             <TextView
@@ -190,22 +116,6 @@
                 android:textSize="14sp"
                 android:textColor="@android:color/darker_gray" />
 
-            <TextView
-                android:id="@+id/tvLanguage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Русский"
-                android:textSize="16sp" />
-
-            <ImageView
-                android:id="@+id/btnChangeLanguage"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/outline_expand_circle_right_24"
-                android:padding="4dp"
-                android:background="?android:attr/selectableItemBackgroundBorderless"
-                android:clickable="true"
-                android:focusable="true" />
         </LinearLayout>
 
         <!-- Уведомления -->
@@ -231,7 +141,7 @@
                 android:checked="true" />
         </LinearLayout>
 
-        <!-- Статистика (можно оставить или убрать) -->
+        <!-- Статистика -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -294,13 +204,72 @@
             </LinearLayout>
         </LinearLayout>
 
+        <!-- Фоновая музыка -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Фоновая музыка"
+                android:textSize="16sp"
+                android:textColor="@color/primary_text" />
+
+            <Switch
+                android:id="@+id/switchMusic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true" />
+        </LinearLayout>
+
+        <!-- Выбор трека -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Выберите трек"
+                android:textSize="14sp"
+                android:textColor="@android:color/darker_gray" />
+
+            <Spinner
+                android:id="@+id/spinnerTrack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="150dp" />
+        </LinearLayout>
+
+        <!-- Информация об авторских правах -->
+        <Button
+            android:id="@+id/btnAbout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Музыка: 'The Fallen' by Caleb Bryant (используется по лицензии Creative Commons Attribution)"
+            android:textSize="12sp"
+            android:textColor="?android:attr/textColorSecondary"
+            android:gravity="center"
+            android:padding="8dp"
+            android:layout_marginTop="16dp" />
+
         <!-- Кнопка очистки черновиков -->
         <Button
             android:id="@+id/btnClearDrafts"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Очистить все черновики"
-            android:backgroundTint="?attr/colorError"
+            android:textSize="18sp"
+            style="@style/Widget.Material3.Button"
             android:layout_marginTop="8dp" />
 
     </LinearLayout>

@@ -1,7 +1,36 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.MVP_AUTORSKIY_START" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+    <style name="Theme.AvtorskiyStart" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Основные цвета для тёмной темы -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryVariant">@color/primary_dark</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <item name="colorSecondary">@color/primary_light</item>
+        <item name="colorSecondaryVariant">@color/primary_dark</item>
+        <item name="colorOnSecondary">@color/primary_text</item>
+
+        <!-- Цвета элементов интерфейса -->
+        <item name="colorControlNormal">@color/primary_text</item>
+        <item name="colorControlActivated">@color/primary</item>
+
+        <!-- Фон окна -->
+        <item name="android:windowBackground">@color/window_background</item>
+        <item name="backgroundColor">@color/window_background</item>
+
+        <!-- Статус бар -->
+        <item name="android:statusBarColor">@color/primary_dark</item>
+    </style>
+
+    <!-- Переопределяем стили текста для тёмной темы (цвета уже подхватятся из ?android:attr/textColorPrimary) -->
+    <style name="TextAppearance.AvtorskiyStart.ExpandedTitle" parent="TextAppearance.MaterialComponents.Headline4">
+        <item name="android:textSize">28sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+    </style>
+
+    <style name="TextAppearance.AvtorskiyStart.CollapsedTitle" parent="TextAppearance.MaterialComponents.Headline6">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
     </style>
 </resources>

@@ -4,11 +4,11 @@
     android:id="@+id/cardOption"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp"
+    android:layout_marginBottom="12dp"
     app:cardCornerRadius="12dp"
     app:cardElevation="2dp"
-    app:cardBackgroundColor="@color/white"
-    app:strokeColor="@color/primary_light"
+    app:cardBackgroundColor="?attr/colorSurface"
+    app:strokeColor="?attr/colorPrimary"
     app:strokeWidth="1dp"
     android:clickable="true"
     android:focusable="true"
@@ -23,21 +23,22 @@
 
         <TextView
             android:id="@+id/tvOptionLetter"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
             android:gravity="center"
-            android:textSize="16sp"
+            android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="?attr/colorPrimary"
             android:background="@drawable/bg_option_letter"
-            android:layout_marginEnd="12dp" />
+            android:layout_marginEnd="16dp" />
 
         <TextView
             android:id="@+id/tvOptionText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textSize="16sp" />
-
+            android:textSize="16sp"
+            android:textColor="?android:attr/textColorPrimary"
+            android:lineSpacingExtra="2dp" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

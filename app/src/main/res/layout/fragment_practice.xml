@@ -1,110 +1,203 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:padding="16dp">
 
-    <!-- Заголовок и таймер -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginBottom="16dp">
+        android:orientation="vertical">
 
+        <!-- Заголовок -->
         <TextView
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text="Новое сочинение"
             android:textSize="24sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tvTimer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="00:00:00"
-            android:textSize="20sp"
             android:textStyle="bold"
-            android:layout_marginEnd="16dp" />
+            android:gravity="center"
+            android:layout_marginBottom="12dp" />
 
-        <Button
-            android:id="@+id/btnStartPause"
-            android:layout_width="wrap_content"
+        <!-- Таймер и кнопки -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Старт" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp">
 
+            <TextView
+                android:id="@+id/tvTimer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="00:00:00"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:gravity="start" />
+
+            <Button
+                android:id="@+id/btnStartPause"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Старт"
+                android:layout_marginEnd="8dp" />
+
+            <Button
+                android:id="@+id/btnReset"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Сброс" />
+        </LinearLayout>
+
+        <!-- Кнопка справки -->
         <Button
-            android:id="@+id/btnReset"
-            android:layout_width="wrap_content"
+            android:id="@+id/btnHelp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Сброс" />
+            android:text="Справка (структура сочинения)"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Поле темы (обычный EditText, без TextInputLayout) -->
+        <EditText
+            android:id="@+id/etTheme"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:hint="Тема сочинения"
+            android:maxLines="1"
+            android:inputType="text"
+            android:padding="12dp"
+            android:background="@drawable/edit_text_background" />
+
+        <!-- Поле ввода текста -->
+        <EditText
+            android:id="@+id/etContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="200dp"
+            android:maxHeight="400dp"
+            android:gravity="top"
+            android:inputType="textMultiLine"
+            android:padding="12dp"
+            android:background="@drawable/edit_text_background"
+            android:hint="Начните писать ваше сочинение здесь..."
+            android:scrollbars="vertical"
+            android:scrollbarAlwaysDrawVerticalTrack="true"
+            android:isScrollContainer="true"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Счётчик слов и знаков + кнопка очистки -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:id="@+id/tvStats"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="0 слов · 0 знаков"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:id="@+id/btnClear"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/outline_delete_24"
+                android:tint="?attr/colorError"
+                android:padding="4dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:contentDescription="Очистить поля" />
+        </LinearLayout>
+
+        <!-- Чек-лист -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="?attr/colorSurface"
+            android:layout_marginBottom="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Чек-лист подготовки"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="12dp" />
+
+                <LinearLayout
+                    android:id="@+id/llChecklist"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+                <TextView
+                    android:id="@+id/tvHint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="@color/primary"
+                    android:layout_marginTop="8dp"
+                    android:visibility="gone" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Кнопки сохранения и избранного -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="16dp">
+
+            <Button
+                android:id="@+id/btnSave"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Сохранить черновик"
+                android:layout_marginEnd="4dp" />
+
+            <Button
+                android:id="@+id/btnFavorite"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Добавить в избранное"
+                android:layout_marginStart="4dp" />
+        </LinearLayout>
+
+        <!-- Заголовок недавних работ -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Недавние работы"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Список черновиков -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvDrafts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
     </LinearLayout>
-
-    <!-- Кнопка справки -->
-    <Button
-        android:id="@+id/btnHelp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Справка (структура сочинения)"
-        android:layout_marginBottom="16dp" />
-
-    <!-- Поле ввода текста -->
-    <EditText
-        android:id="@+id/etContent"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="top"
-        android:inputType="textMultiLine"
-        android:padding="8dp"
-        android:background="@android:drawable/editbox_background"
-        android:hint="Начните писать ваше сочинение здесь..." />
-
-    <!-- Счётчик слов и знаков -->
-    <TextView
-        android:id="@+id/tvStats"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="0 слов · 0 знаков"
-        android:gravity="center"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="16dp" />
-
-    <!-- Кнопка сохранения -->
-    <Button
-        android:id="@+id/btnSave"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Сохранить черновик"
-        android:layout_marginBottom="16dp" />
-    <!-- Кнопка добавления в избранное -->
-    <Button
-        android:id="@+id/btnFavorite"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="В избранное"
-        android:layout_marginStart="4dp" />
-
-    <!-- Заголовок недавних работ -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Недавние работы"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="8dp" />
-
-    <!-- Список недавних работ -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvDrafts"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:nestedScrollingEnabled="false"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-
-</LinearLayout>
+</ScrollView>

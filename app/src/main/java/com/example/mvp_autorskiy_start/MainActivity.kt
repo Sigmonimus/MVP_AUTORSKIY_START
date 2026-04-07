@@ -6,19 +6,23 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
-import com.google.android.material.navigation.NavigationView
-import com.google.android.material.appbar.MaterialToolbar
-import com.example.mvp_autorskiy_start.ui.theory.TheoryFragment
+import androidx.fragment.app.FragmentManager
+import com.example.mvp_autorskiy_start.data.repository.FavoritesRepository
+import com.example.mvp_autorskiy_start.data.repository.QuizRepository
+import com.example.mvp_autorskiy_start.data.repository.TestModuleRepository
 import com.example.mvp_autorskiy_start.ui.test.TestMenuFragment
+import com.example.mvp_autorskiy_start.ui.arguments.ArgumentsLibraryFragment
+import com.example.mvp_autorskiy_start.ui.authors.AuthorsFragment
+import com.example.mvp_autorskiy_start.ui.favorites.FavoritesFragment
+import com.example.mvp_autorskiy_start.ui.home.HomeFragment
 import com.example.mvp_autorskiy_start.ui.practice.PracticeFragment
 import com.example.mvp_autorskiy_start.ui.profile.ProfileFragment
-import com.example.mvp_autorskiy_start.ui.authors.AuthorsFragment
-import com.example.mvp_autorskiy_start.ui.arguments.CategoriesFragment
-import com.example.mvp_autorskiy_start.ui.favorites.FavoritesFragment
-import com.example.mvp_autorskiy_start.data.FavoritesRepository
-import com.example.mvp_autorskiy_start.ui.home.HomeFragment
-import androidx.fragment.app.FragmentManager
-import com.example.mvp_autorskiy_start.ui.arguments.ArgumentsLibraryFragment
+import com.example.mvp_autorskiy_start.ui.theory.TheoryFragment
+import com.example.mvp_autorskiy_start.utils.MusicPlayerManager
+import com.example.mvp_autorskiy_start.utils.SoundPlayer
+import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.navigation.NavigationView
+
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var drawerLayout: DrawerLayout
@@ -28,39 +32,36 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        TestModuleRepository.init(this)
+        QuizRepository.init(this)
+        // Инициализация музыки (App уже вызвал init, но для надёжности вызываем ещё раз – безопасно)
+        MusicPlayerManager.init(this)
 
-
-        // Находим View
         drawerLayout = findViewById(R.id.drawerLayout)
         navigationView = findViewById(R.id.navigationView)
         toolbar = findViewById(R.id.topAppBar)
 
-        // Настраиваем Toolbar как ActionBar
         setSupportActionBar(toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true) // Показывает стрелку "Назад" на тулбаре
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         toolbar.setNavigationOnClickListener {
-            drawerLayout.openDrawer(GravityCompat.START) // Открываем шторку по клику на бургер
+            drawerLayout.openDrawer(GravityCompat.START)
         }
 
-        // Устанавливаем обработчик кликов по меню в шторке
         navigationView.setNavigationItemSelectedListener(this)
         FavoritesRepository.init(this)
 
-        // Загружаем первый фрагмент (например, Теорию) при запуске
         if (savedInstanceState == null) {
             loadFragment(HomeFragment())
             navigationView.setCheckedItem(R.id.nav_home)
         }
     }
 
-    // Функция загрузки фрагмента в контейнер
     private fun loadFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainer, fragment)
             .commit()
     }
 
-    // Обработка нажатий на пункты меню в шторке
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
         when (item.itemId) {
@@ -73,16 +74,45 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_favorites -> loadFragment(FavoritesFragment())
             R.id.nav_profile -> loadFragment(ProfileFragment())
         }
-        drawerLayout.closeDrawer(GravityCompat.START) // Закрываем шторку после выбора
+        drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }
 
-    // Обработка системной кнопки "Назад": если шторка открыта, закрываем её, иначе выходим
     override fun onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START)
         } else {
             super.onBackPressed()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        MusicPlayerManager.start()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        MusicPlayerManager.pause()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        MusicPlayerManager.release()
+        SoundPlayer.release()
+    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                // Закрыть шторку, если она открыта, или вернуться к предыдущему фрагменту
+                if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                } else {
+                    supportFragmentManager.popBackStack()
+                }
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 }

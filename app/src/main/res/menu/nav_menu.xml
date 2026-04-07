@@ -16,7 +16,7 @@
         <item
             android:id="@+id/nav_test"
             android:icon="@drawable/outline_award_star_24"
-            android:title="Тест" />
+            android:title="Тесты" />
         <item
             android:id="@+id/nav_library"
             android:icon="@drawable/outline_bookmarks_24"
@@ -24,7 +24,7 @@
         <item
             android:id="@+id/nav_authors"
             android:icon="@drawable/outline_assignment_ind_24"
-            android:title="Авторы и биография" />
+            android:title="Авторы и произведения" />
         <item
             android:id="@+id/nav_favorites"
             android:icon="@drawable/outline_bookmark_add_24"

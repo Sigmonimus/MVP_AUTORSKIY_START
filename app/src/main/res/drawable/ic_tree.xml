@@ -1,0 +1,69 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="96dp"
+    android:height="96dp"
+    android:viewportWidth="96"
+    android:viewportHeight="96">
+    <!-- Background shadow (soft) -->
+    <group
+        android:scaleX="1.05"
+        android:scaleY="1.05"
+        android:pivotX="48"
+        android:pivotY="48">
+        <path
+            android:fillColor="#33000000"
+            android:pathData="M48,80 L28,76 L20,68 L18,56 L22,44 L28,36 L38,32 L48,30 L58,32 L68,36 L74,44 L78,56 L76,68 L68,76 L48,80z" />
+    </group>
+    <!-- Trunk (with texture) -->
+    <path
+        android:fillColor="#6B4C3B"
+        android:pathData="M40,70 L56,70 L54,78 L42,78 Z" />
+    <path
+        android:fillColor="#8B5A2B"
+        android:pathData="M42,64 L54,64 L52,72 L44,72 Z" />
+    <path
+        android:fillColor="#A56B38"
+        android:pathData="M44,58 L52,58 L50,66 L46,66 Z" />
+    <!-- Roots / ground contact -->
+    <path
+        android:fillColor="#5D3A1A"
+        android:pathData="M38,78 L58,78 L56,82 L40,82 Z" />
+    <!-- Branches -->
+    <path
+        android:fillColor="#7A4C2C"
+        android:pathData="M48,58 L62,48 L68,54 L56,60 Z" />
+    <path
+        android:fillColor="#7A4C2C"
+        android:pathData="M48,58 L34,48 L28,54 L40,60 Z" />
+    <path
+        android:fillColor="#8B5A2B"
+        android:pathData="M48,56 L52,44 L60,48 L54,54 Z" />
+    <path
+        android:fillColor="#8B5A2B"
+        android:pathData="M48,56 L44,44 L36,48 L42,54 Z" />
+    <!-- Canopy layers (main leaves) -->
+    <path
+        android:fillColor="#4A7D3A"
+        android:pathData="M48,38 L60,44 L66,52 L62,62 L48,68 L34,62 L30,52 L36,44 L48,38z" />
+    <path
+        android:fillColor="#5D8C3E"
+        android:pathData="M48,34 L58,40 L64,48 L60,58 L48,64 L36,58 L32,48 L38,40 L48,34z" />
+    <path
+        android:fillColor="#6E9E4C"
+        android:pathData="M48,30 L56,36 L62,44 L58,54 L48,60 L38,54 L34,44 L40,36 L48,30z" />
+    <!-- Highlight on top leaves -->
+    <path
+        android:fillColor="#9BC47A"
+        android:pathData="M48,28 L54,34 L58,40 L54,48 L48,52 L42,48 L38,40 L42,34 L48,28z" />
+    <!-- Leaf details (veins) -->
+    <path
+        android:fillColor="#327A1A"
+        android:strokeWidth="1"
+        android:pathData="M48,34 L48,52 M54,40 L54,48 M42,40 L42,48 M58,44 L48,38 M38,44 L48,38" />
+    <!-- Small berries / fruits (optional) -->
+    <path
+        android:fillColor="#E66A2C"
+        android:pathData="M56,48 C58,46 60,44 58,42 C56,40 54,44 54,48 C54,52 56,54 58,52 C60,50 58,48 56,48z" />
+    <path
+        android:fillColor="#E66A2C"
+        android:pathData="M38,48 C36,46 34,44 36,42 C38,40 40,44 40,48 C40,52 38,54 36,52 C34,50 36,48 38,48z" />
+</vector>

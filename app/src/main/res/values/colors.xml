@@ -1,20 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Основные цвета -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="primary_text">#DE000000</color>
-    <color name="secondary_text">#8A000000</color>
-    <color name="quote_background">#FFF3E0</color>
-    <color name="warning_background">#FFEBEE</color>
-    <!-- Основной фиолетовый -->
-    <color name="primary">#FF6200EE</color>
-    <!-- Светлый фиолетовый для обводки карточек -->
-    <color name="primary_light">#E1BEE7</color>
-    <!-- Мягкий лавандовый фон -->
-    <color name="soft_lavender">#E6E6FA</color>
-    <color name="important_text">#4A154B</color>
-    <color name="highlight_background">#F0E6FF</color>
-    <!-- Цвета для теста -->
-    <color name="correct_green">#4CAF50</color>
-    <color name="wrong_red">#F44336</color>
+
+    <!-- Текст -->
+    <color name="primary_text">#4A2E1A</color>        <!-- тёмно-коричневый для основного текста -->
+    <color name="secondary_text">#8B7355</color>      <!-- светло-коричневый для второстепенного текста -->
+
+    <!-- Акцентные цвета -->
+    <color name="primary">#A67C27</color>              <!-- золотисто-коричневый (основной) -->
+    <color name="primary_dark">#8B5A2B</color>         <!-- тёмный оттенок для акцентов -->
+    <color name="primary_light">#E8DFD1</color>        <!-- светлый бежевый для фона карточек и обводки -->
+
+    <!-- Цвета для кнопок и элементов управления -->
+    <color name="button_background">#A67C00</color>    <!-- тёмно-золотой для кнопок -->
+
+    <!-- Фоны -->
+    <color name="window_background">#F5F2EB</color>    <!-- основной фон экранов -->
+    <color name="card_background">#FFF7ED</color>      <!-- фон для карточек и аватарок -->
+    <color name="avatar_background">#B37C15</color>    <!-- фон для аватарок (если используется как подложка) -->
+
+    <!-- Специальные блоки (цитаты, предупреждения) -->
+    <color name="quote_background">#E8DFD1</color>     <!-- бежевый для цитат -->
+    <color name="warning_background">#FFE4C4</color>   <!-- светло-персиковый для предупреждений -->
+    <color name="highlight_background">#FFF7ED</color> <!-- кремовый для выделенных блоков -->
+
+    <!-- Цвета для тестов -->
+    <color name="correct_green">#6A994E</color>        <!-- мягкий зелёный -->
+    <color name="wrong_red">#D97A4A</color><!-- тёплый красно-оранжевый -->
+
+    <color name="background_light">#FAFAFA</color>
+
+    <color name="sky_top">#87CEEB</color>
+    <color name="sky_bottom">#E0F6FF</color>
+    <color name="forest_green">#2E7D32</color>
+    <color name="wood_brown">#8D6E63</color>
+    <color name="hill_green">#6B8E23</color>
+    <color name="sun_yellow">#FFD966</color>
+
 </resources>

@@ -39,6 +39,15 @@
         </LinearLayout>
 
         <!-- Карточка стриков -->
+        <TextView
+            android:id="@+id/calendarTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Активность"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
         <androidx.cardview.widget.CardView
             android:id="@+id/streakCard"
             android:layout_width="match_parent"
@@ -103,14 +112,6 @@
         </androidx.cardview.widget.CardView>
 
         <!-- Календарь активности -->
-        <TextView
-            android:id="@+id/calendarTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Активность"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/activityCalendar"

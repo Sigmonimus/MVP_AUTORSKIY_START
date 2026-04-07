@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <!-- Индикатор прогресса -->
+    <!-- Индикатор прогресса с заголовком -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -18,38 +18,50 @@
             android:id="@+id/tvQuestionNumber"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textStyle="bold"
+            android:textColor="?android:attr/textColorSecondary"
             android:layout_marginEnd="12dp" />
 
-        <ProgressBar
+        <com.google.android.material.progressindicator.LinearProgressIndicator
             android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="0dp"
-            android:layout_height="8dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:progressTint="?attr/colorPrimary"
-            android:backgroundTint="#E0E0E0" />
-
+            app:trackColor="@color/primary_light"
+            app:indicatorColor="@color/primary"
+            app:trackThickness="8dp" />
     </LinearLayout>
 
-    <!-- Текст вопроса -->
-    <TextView
-        android:id="@+id/tvQuestionText"
+    <!-- Текст вопроса в карточке -->
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="24dp" />
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
+        app:cardBackgroundColor="?attr/colorSurface"
+        android:layout_marginBottom="24dp">
 
-    <!-- Контейнер для вариантов ответа (будем добавлять программно) -->
+        <TextView
+            android:id="@+id/tvQuestionText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="?android:attr/textColorPrimary"
+            android:lineSpacingExtra="4dp" />
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Контейнер для вариантов ответа (программно добавляем карточки) -->
     <LinearLayout
         android:id="@+id/optionsContainer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:orientation="vertical" />
 
-    <!-- Кнопки -->
+    <!-- Кнопки управления -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -64,6 +76,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Проверить"
+            app:icon="@drawable/ic_check"
+            app:iconGravity="textStart"
+            android:textSize="16sp"
             android:layout_marginEnd="8dp" />
 
         <com.google.android.material.button.MaterialButton
@@ -73,8 +88,11 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Далее"
-            android:enabled="false" />
-
+            app:icon="@drawable/ic_chevron_right"
+            app:iconGravity="textEnd"
+            android:enabled="false"
+            android:textSize="16sp"
+            android:layout_marginStart="8dp" />
     </LinearLayout>
 
 </LinearLayout>

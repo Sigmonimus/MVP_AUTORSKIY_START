@@ -49,6 +49,8 @@ configurations.all {
     exclude(group = "com.atlassian.commonmark")
 }
 dependencies {
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    kapt("com.github.bumptech.glide:compiler:4.16.0")
     implementation("org.commonmark:commonmark:0.21.0")
     implementation("com.google.code.gson:gson:2.10.1") // для работы с JSON
     implementation("androidx.recyclerview:recyclerview:1.3.2")
