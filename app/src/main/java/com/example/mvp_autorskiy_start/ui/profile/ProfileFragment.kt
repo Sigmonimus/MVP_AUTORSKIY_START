@@ -5,26 +5,21 @@ import android.app.AlertDialog
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.example.mvp_autorskiy_start.data.models.PracticeDraft
 import com.example.mvp_autorskiy_start.databinding.FragmentProfileBinding
+import com.example.mvp_autorskiy_start.ui.common.BaseFragment
 import com.example.mvp_autorskiy_start.utils.MusicPlayerManager
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
-class ProfileFragment : Fragment() {
-
-    private var _binding: FragmentProfileBinding? = null
-    private val binding get() = _binding!!
+class ProfileFragment : BaseFragment<FragmentProfileBinding>(FragmentProfileBinding::inflate) {
 
     private val prefs by lazy { requireContext().getSharedPreferences("profile_prefs", Context.MODE_PRIVATE) }
     private val gson = Gson()
@@ -36,15 +31,6 @@ class ProfileFragment : Fragment() {
         } ?: run {
             Toast.makeText(requireContext(), "Изображение не выбрано", Toast.LENGTH_SHORT).show()
         }
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentProfileBinding.inflate(inflater, container, false)
-        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -60,10 +46,10 @@ class ProfileFragment : Fragment() {
                 isSwitchInitialized = true
             }
         }
+
         val trackNames = MusicPlayerManager.getTracks().map { it.name }
         if (trackNames.isNotEmpty()) {
-            val trackAdapter =
-                ArrayAdapter(requireContext(), R.layout.simple_spinner_item, trackNames)
+            val trackAdapter = ArrayAdapter(requireContext(), R.layout.simple_spinner_item, trackNames)
             trackAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
             binding.spinnerTrack.adapter = trackAdapter
             binding.spinnerTrack.setSelection(MusicPlayerManager.getCurrentTrackIndex())
@@ -112,7 +98,6 @@ class ProfileFragment : Fragment() {
     private fun loadUserInfo() {
         val userName = prefs.getString("user_name", "Александр Сергеевич")
         binding.tvUserName.text = userName
-
         val email = prefs.getString("user_email", "pushkin@example.com")
         binding.tvEmail.text = email
     }
@@ -147,12 +132,6 @@ class ProfileFragment : Fragment() {
         prefs.edit().remove("avatar").apply()
     }
 
-    private fun setAvatar(avatarName: String) {
-        prefs.edit().putString("avatar", avatarName).apply()
-        prefs.edit().remove("avatar_uri").apply()
-        setAvatarImage(avatarName)
-    }
-
     private fun setAvatarImage(avatarName: String) {
         val resId = when (avatarName) {
             "pushkin" -> com.example.mvp_autorskiy_start.R.drawable.ic_pushkin
@@ -167,7 +146,6 @@ class ProfileFragment : Fragment() {
     private fun loadStatistics() {
         val drafts = getDraftsFromPrefs()
         binding.tvDraftsCount.text = drafts.size.toString()
-
         val totalWords = drafts.sumOf { draft ->
             draft.content.split(Regex("\\s+")).count { it.isNotEmpty() }
         }
@@ -198,7 +176,7 @@ class ProfileFragment : Fragment() {
     }
 
     private fun showEditNameDialog() {
-        val dialogView = LayoutInflater.from(requireContext()).inflate(com.example.mvp_autorskiy_start.R.layout.dialog_edit_name, null)
+        val dialogView = layoutInflater.inflate(com.example.mvp_autorskiy_start.R.layout.dialog_edit_name, null)
         val editText = dialogView.findViewById<EditText>(com.example.mvp_autorskiy_start.R.id.etName)
         editText.setText(prefs.getString("user_name", ""))
 
@@ -218,7 +196,7 @@ class ProfileFragment : Fragment() {
     }
 
     private fun showEditEmailDialog() {
-        val dialogView = LayoutInflater.from(requireContext()).inflate(com.example.mvp_autorskiy_start.R.layout.dialog_edit_email, null)
+        val dialogView = layoutInflater.inflate(com.example.mvp_autorskiy_start.R.layout.dialog_edit_email, null)
         val editText = dialogView.findViewById<EditText>(com.example.mvp_autorskiy_start.R.id.etEmail)
         editText.setText(prefs.getString("user_email", ""))
 
@@ -242,8 +220,7 @@ class ProfileFragment : Fragment() {
     private fun showLanguageDialog() {
         AlertDialog.Builder(requireContext())
             .setTitle("Выберите язык")
-            .setItems(arrayOf("Русский")) { _, _ ->
-            }
+            .setItems(arrayOf("Русский")) { _, _ -> }
             .show()
     }
 
@@ -259,10 +236,5 @@ class ProfileFragment : Fragment() {
             }
             .setNegativeButton("Отмена", null)
             .show()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }

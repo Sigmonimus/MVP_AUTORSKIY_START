@@ -3,28 +3,14 @@ package com.example.mvp_autorskiy_start.ui.authors
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mvp_autorskiy_start.R
 import com.example.mvp_autorskiy_start.databinding.FragmentAuthorWorksBinding
 import com.example.mvp_autorskiy_start.data.models.Work
+import com.example.mvp_autorskiy_start.ui.common.BaseFragment
 
-class AuthorWorksFragment : Fragment() {
-
-    private var _binding: FragmentAuthorWorksBinding? = null
-    private val binding get() = _binding!!
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentAuthorWorksBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+class AuthorWorksFragment : BaseFragment<FragmentAuthorWorksBinding>(FragmentAuthorWorksBinding::inflate) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -49,11 +35,6 @@ class AuthorWorksFragment : Fragment() {
                 .commit()
         }
         binding.rvWorks.adapter = adapter
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     companion object {

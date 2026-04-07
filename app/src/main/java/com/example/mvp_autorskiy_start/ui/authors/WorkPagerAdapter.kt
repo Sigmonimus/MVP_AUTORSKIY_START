@@ -14,7 +14,7 @@ class WorkPagerAdapter(activity: FragmentActivity, private val work: Work) :
         return when (position) {
             0 -> WorkSummaryFragment.newInstance(work.summary)
             1 -> WorkFullTextFragment.newInstance(work.id)
-            2 -> WorkArgumentsFragment.newInstance(work.arguments)
+            2 -> ArgumentsListFragment.newInstance(work.arguments)
             else -> throw IllegalStateException("Invalid position")
         }
     }

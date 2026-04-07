@@ -1,28 +1,14 @@
 package com.example.mvp_autorskiy_start.ui.authors
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
 import com.example.mvp_autorskiy_start.databinding.FragmentAuthorDetailBinding
 import com.example.mvp_autorskiy_start.data.models.Author
+import com.example.mvp_autorskiy_start.ui.common.BaseFragment
 import com.google.android.material.tabs.TabLayoutMediator
 
-class AuthorDetailFragment : Fragment() {
-
-    private var _binding: FragmentAuthorDetailBinding? = null
-    private val binding get() = _binding!!
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentAuthorDetailBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+class AuthorDetailFragment : BaseFragment<FragmentAuthorDetailBinding>(FragmentAuthorDetailBinding::inflate) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -53,9 +39,14 @@ class AuthorDetailFragment : Fragment() {
         }.attach()
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    private fun shortenName(fullName: String): String {
+        val parts = fullName.split(" ")
+        return when (parts.size) {
+            1 -> fullName
+            2 -> "${parts[0].first()}. ${parts[1]}"
+            3 -> "${parts[0].first()}.${parts[1].first()}. ${parts[2]}"
+            else -> fullName
+        }
     }
 
     companion object {
@@ -65,16 +56,6 @@ class AuthorDetailFragment : Fragment() {
             args.putParcelable("author", author)
             fragment.arguments = args
             return fragment
-        }
-    }
-
-    private fun shortenName(fullName: String): String {
-        val parts = fullName.split(" ")
-        return when (parts.size) {
-            1 -> fullName
-            2 -> "${parts[0].first()}. ${parts[1]}"
-            3 -> "${parts[0].first()}.${parts[1].first()}. ${parts[2]}"
-            else -> fullName
         }
     }
 }

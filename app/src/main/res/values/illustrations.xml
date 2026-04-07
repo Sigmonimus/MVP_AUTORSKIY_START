@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="illustration_names">
+        <item>illustration_war_and_peace</item>
+        <item>illustration_crime_and_punishment</item>
+        <item>illustration_master_and_margarita</item>
+        <item>illustration_eugene_onegin</item>
+        <item>illustration_anna_karenina</item>
+        <item>illustration_fathers_and_sons</item>
+        <item>illustration_dead_souls</item>
+        <item>illustration_a_hero_of_our_time</item>
+        <item>illustration_the_storm</item>
+        <item>illustration_oblomov</item>
+        <item>illustration_quiet_don</item>
+        <item>illustration_heart_of_a_dog</item>
+        <item>illustration_the_captains_daughter</item>
+        <item>illustration_at_the_bottom</item>
+        <item>illustration_the_twelve</item>
+        <item>illustration_who_lives_well_in_russia</item>
+        <item>illustration_lefty</item>
+        <item>illustration_ward_no_6</item>
+        <item>illustration_the_cherry_orchard</item>
+        <item>illustration_poor_liza</item>
+    </string-array>
+</resources>

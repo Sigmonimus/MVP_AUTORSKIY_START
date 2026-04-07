@@ -1,31 +1,17 @@
 package com.example.mvp_autorskiy_start.ui.authors
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.webkit.WebViewClient
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.example.mvp_autorskiy_start.databinding.FragmentWorkFullTextBinding
 import com.example.mvp_autorskiy_start.data.repository.AuthorsRepository
+import com.example.mvp_autorskiy_start.ui.common.BaseFragment
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class WorkFullTextFragment : Fragment() {
-
-    private var _binding: FragmentWorkFullTextBinding? = null
-    private val binding get() = _binding!!
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentWorkFullTextBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+class WorkFullTextFragment : BaseFragment<FragmentWorkFullTextBinding>(FragmentWorkFullTextBinding::inflate) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -34,7 +20,6 @@ class WorkFullTextFragment : Fragment() {
 
         binding.progressBar.visibility = View.VISIBLE
         binding.webView.visibility = View.GONE
-
 
         binding.webView.settings.apply {
             builtInZoomControls = true
@@ -69,11 +54,6 @@ class WorkFullTextFragment : Fragment() {
             binding.progressBar.visibility = View.GONE
             binding.webView.visibility = View.VISIBLE
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     companion object {

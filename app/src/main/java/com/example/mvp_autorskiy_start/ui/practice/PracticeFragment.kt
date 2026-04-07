@@ -7,27 +7,22 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mvp_autorskiy_start.R
 import com.example.mvp_autorskiy_start.data.repository.FavoritesRepository
 import com.example.mvp_autorskiy_start.data.models.PracticeDraft
 import com.example.mvp_autorskiy_start.data.models.SavedEssay
 import com.example.mvp_autorskiy_start.databinding.FragmentPracticeBinding
+import com.example.mvp_autorskiy_start.ui.common.BaseFragment
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.util.*
 
-class PracticeFragment : Fragment() {
-
-    private var _binding: FragmentPracticeBinding? = null
-    private val binding get() = _binding!!
+class PracticeFragment : BaseFragment<FragmentPracticeBinding>(FragmentPracticeBinding::inflate) {
 
     private var timerSeconds = 0
     private var isTimerRunning = false
@@ -39,19 +34,9 @@ class PracticeFragment : Fragment() {
     private var draftsMap = mutableMapOf<String, PracticeDraft>()
     private var currentDraftId: String? = null
 
-    // Чек-лист
     private data class ChecklistItem(val title: String, var isChecked: Boolean)
     private lateinit var checklistItems: MutableList<ChecklistItem>
     private val checklistViews = mutableListOf<View>()
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentPracticeBinding.inflate(inflater, container, false)
-        return binding.root
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -156,7 +141,6 @@ class PracticeFragment : Fragment() {
             return
         }
 
-
         val title = if (theme.isNotEmpty()) {
             theme
         } else {
@@ -228,7 +212,7 @@ class PracticeFragment : Fragment() {
                 binding.etContent.setText(draft.content)
                 binding.etTheme.setText(draft.theme)
                 binding.etContent.setSelection(draft.content.length)
-                updateChecklist(draft.content)   // передаём напрямую
+                updateChecklist(draft.content)
             },
             onDeleteClick = { draft ->
                 draftsMap.remove(draft.id)
@@ -274,8 +258,6 @@ class PracticeFragment : Fragment() {
 
     private fun updateChecklist(text: String) {
         val intro = text.take(500)
-
-        // 1. Тезис
         val thesisPatterns = listOf(
             Regex("""(я (считаю|думаю|уверен|полагаю|убеждён))""", RegexOption.IGNORE_CASE),
             Regex(""".*?—\s+это\s+.*?""", RegexOption.IGNORE_CASE),
@@ -286,7 +268,6 @@ class PracticeFragment : Fragment() {
         val hasThesis = thesisPatterns.any { it.containsMatchIn(intro) }
         checklistItems[0].isChecked = hasThesis
 
-        // 2. Аргументы
         val literaryPatterns = listOf(
             Regex("""[А-ЯЁ][а-яё]+\s+[А-ЯЁ][а-яё]+(?:ович|евна|на|ов)"""),
             Regex("""(Война и мир|Евгений Онегин|Преступление и наказание|Отцы и дети|Капитанская дочка|Герой нашего времени|Вельд)""", RegexOption.IGNORE_CASE),
@@ -296,7 +277,6 @@ class PracticeFragment : Fragment() {
         val hasArgumentStructure = Regex("""(тезис|аргумент|доказывает|подтверждает|иллюстрирует)""", RegexOption.IGNORE_CASE).containsMatchIn(text)
         checklistItems[1].isChecked = hasLiteraryMention && hasArgumentStructure
 
-        // 3. Заключение
         val ending = text.takeLast(500)
         val conclusionPatterns = listOf(
             Regex("""(таким образом|итак|подводя итог|в заключение|следовательно|поэтому|как видим)""", RegexOption.IGNORE_CASE),
@@ -305,24 +285,20 @@ class PracticeFragment : Fragment() {
         val hasConclusion = conclusionPatterns.any { it.containsMatchIn(ending) }
         checklistItems[2].isChecked = hasConclusion
 
-        // 4. Объём
         val wordCount = text.split(Regex("\\s+")).filter { it.isNotEmpty() }.size
         checklistItems[3].isChecked = wordCount >= 250
 
-        // 5. Композиция
         val hasIntro = intro.length > 50
         val hasBody = text.length > 200
         val hasFullStructure = hasIntro && hasBody && hasConclusion && text.length > 300
         checklistItems[4].isChecked = hasFullStructure
 
-        // Обновляем иконки
         checklistItems.forEachIndexed { index, item ->
             val view = checklistViews[index]
             val ivCheck = view.findViewById<ImageView>(R.id.ivChecklistIcon)
             ivCheck.setImageResource(if (item.isChecked) R.drawable.ic_check_circle else R.drawable.ic_check_circle_outline)
         }
 
-        // Формируем подсказку
         val missing = mutableListOf<String>()
         if (!checklistItems[0].isChecked) missing.add("тезис во вступлении")
         if (!checklistItems[1].isChecked) missing.add("литературный аргумент (хотя бы один)")
@@ -339,8 +315,7 @@ class PracticeFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        handler.removeCallbacks(runnable)
         super.onDestroyView()
-        _binding = null
+        handler.removeCallbacks(runnable)
     }
 }

@@ -4,23 +4,18 @@ import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
 import android.os.Build
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import com.example.mvp_autorskiy_start.R
 import com.example.mvp_autorskiy_start.data.models.Question
 import com.example.mvp_autorskiy_start.data.repository.QuizRepository
 import com.example.mvp_autorskiy_start.databinding.FragmentTestBinding
+import com.example.mvp_autorskiy_start.ui.common.BaseFragment
 import com.example.mvp_autorskiy_start.utils.SoundPlayer
 import com.google.android.material.card.MaterialCardView
 
-class TestFragment : Fragment() {
-
-    private var _binding: FragmentTestBinding? = null
-    private val binding get() = _binding!!
+class TestFragment : BaseFragment<FragmentTestBinding>(FragmentTestBinding::inflate) {
 
     private lateinit var questions: List<Question>
     private var currentIndex = 0
@@ -28,19 +23,9 @@ class TestFragment : Fragment() {
     private var selectedOptionIndex = -1
     private var quizId: Int = -1
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentTestBinding.inflate(inflater, container, false)
-        return binding.root
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Получаем вопросы и quizId
         questions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             arguments?.getParcelableArrayList("questions", Question::class.java) ?: emptyList()
         } else {
@@ -49,10 +34,7 @@ class TestFragment : Fragment() {
         }
         quizId = arguments?.getInt("quizId", -1) ?: -1
 
-        if (questions.isEmpty()) {
-            // Можно показать сообщение и закрыть фрагмент
-            return
-        }
+        if (questions.isEmpty()) return
 
         displayQuestion()
 
@@ -65,27 +47,21 @@ class TestFragment : Fragment() {
         binding.tvQuestionNumber.text = "Вопрос ${currentIndex + 1}/${questions.size}"
         binding.progressBar.max = questions.size
         binding.progressBar.progress = currentIndex + 1
-
         binding.tvQuestionText.text = question.text
 
-        // Очищаем контейнер и создаём карточки для вариантов
         binding.optionsContainer.removeAllViews()
         val letters = arrayOf("А", "Б", "В", "Г")
         question.options.forEachIndexed { index, option ->
             val card = layoutInflater.inflate(R.layout.item_option, binding.optionsContainer, false) as MaterialCardView
             val tvLetter = card.findViewById<TextView>(R.id.tvOptionLetter)
             val tvText = card.findViewById<TextView>(R.id.tvOptionText)
-
             tvLetter.text = letters[index]
             tvText.text = option
-
             card.tag = index
             card.setOnClickListener { onOptionSelected(index) }
-
             binding.optionsContainer.addView(card)
         }
 
-        // Сбрасываем состояние карточек
         for (i in 0 until binding.optionsContainer.childCount) {
             val card = binding.optionsContainer.getChildAt(i) as MaterialCardView
             card.isEnabled = true
@@ -99,7 +75,6 @@ class TestFragment : Fragment() {
     }
 
     private fun onOptionSelected(index: Int) {
-        // Снимаем выделение со всех
         for (i in 0 until binding.optionsContainer.childCount) {
             val card = binding.optionsContainer.getChildAt(i) as MaterialCardView
             card.isChecked = false
@@ -107,7 +82,6 @@ class TestFragment : Fragment() {
             card.strokeWidth = 1
             card.animate().scaleX(1f).scaleY(1f).setDuration(100).start()
         }
-        // Выделяем выбранную карточку
         val selectedCard = binding.optionsContainer.getChildAt(index) as MaterialCardView
         selectedCard.isChecked = true
         selectedCard.strokeColor = ContextCompat.getColor(requireContext(), R.color.primary)
@@ -120,20 +94,15 @@ class TestFragment : Fragment() {
                 selectedCard.animate().scaleX(1f).scaleY(1f).setDuration(100).start()
             }
             .start()
-
         selectedOptionIndex = index
     }
 
     private fun checkAnswer() {
-        if (selectedOptionIndex == -1) {
-            // Показать сообщение
-            return
-        }
+        if (selectedOptionIndex == -1) return
 
         val question = questions[currentIndex]
         val isCorrect = selectedOptionIndex == question.correctAnswerIndex
 
-        // Визуальная обратная связь
         for (i in 0 until binding.optionsContainer.childCount) {
             val card = binding.optionsContainer.getChildAt(i) as MaterialCardView
             if (i == question.correctAnswerIndex) {
@@ -146,7 +115,6 @@ class TestFragment : Fragment() {
             }
         }
 
-        // Звуковой эффект
         if (isCorrect) {
             SoundPlayer.playCorrect()
             score++
@@ -154,20 +122,15 @@ class TestFragment : Fragment() {
             SoundPlayer.playWrong()
         }
 
-        // Блокируем варианты после ответа
-        disableOptions()
-
-        binding.btnCheck.isEnabled = false
-        binding.btnNext.isEnabled = true
-    }
-
-    private fun disableOptions() {
         for (i in 0 until binding.optionsContainer.childCount) {
             val card = binding.optionsContainer.getChildAt(i) as MaterialCardView
             card.isEnabled = false
             card.isClickable = false
             card.alpha = 0.6f
         }
+
+        binding.btnCheck.isEnabled = false
+        binding.btnNext.isEnabled = true
     }
 
     private fun nextQuestion() {
@@ -180,11 +143,10 @@ class TestFragment : Fragment() {
     }
 
     private fun showResult() {
-        // Сохраняем прогресс теста
         if (quizId != -1) {
             QuizRepository.updateQuizProgress(quizId, score, questions.size)
         }
-        val resultFragment = TestResultFragment.Companion.newInstance(score, questions.size, quizId)
+        val resultFragment = TestResultFragment.newInstance(score, questions.size, quizId)
         parentFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainer, resultFragment)
             .commit()
@@ -211,11 +173,6 @@ class TestFragment : Fragment() {
                 card.animate().scaleX(1f).scaleY(1f).setDuration(150).start()
             }.start()
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     companion object {

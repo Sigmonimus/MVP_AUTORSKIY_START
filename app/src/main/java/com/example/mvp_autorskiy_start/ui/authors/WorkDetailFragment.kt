@@ -1,28 +1,14 @@
 package com.example.mvp_autorskiy_start.ui.authors
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
 import com.example.mvp_autorskiy_start.databinding.FragmentWorkDetailBinding
 import com.example.mvp_autorskiy_start.data.models.Work
+import com.example.mvp_autorskiy_start.ui.common.BaseFragment
 import com.google.android.material.tabs.TabLayoutMediator
 
-class WorkDetailFragment : Fragment() {
-
-    private var _binding: FragmentWorkDetailBinding? = null
-    private val binding get() = _binding!!
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentWorkDetailBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+class WorkDetailFragment : BaseFragment<FragmentWorkDetailBinding>(FragmentWorkDetailBinding::inflate) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -49,11 +35,6 @@ class WorkDetailFragment : Fragment() {
                 else -> ""
             }
         }.attach()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     companion object {

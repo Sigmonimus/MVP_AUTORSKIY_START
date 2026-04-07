@@ -1,26 +1,12 @@
 package com.example.mvp_autorskiy_start.ui.favorites
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import com.example.mvp_autorskiy_start.databinding.FragmentFavoritesBinding
+import com.example.mvp_autorskiy_start.ui.common.BaseFragment
 import com.google.android.material.tabs.TabLayoutMediator
 
-class FavoritesFragment : Fragment() {
-
-    private var _binding: FragmentFavoritesBinding? = null
-    private val binding get() = _binding!!
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentFavoritesBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+class FavoritesFragment : BaseFragment<FragmentFavoritesBinding>(FragmentFavoritesBinding::inflate) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -34,10 +20,5 @@ class FavoritesFragment : Fragment() {
                 else -> ""
             }
         }.attach()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }

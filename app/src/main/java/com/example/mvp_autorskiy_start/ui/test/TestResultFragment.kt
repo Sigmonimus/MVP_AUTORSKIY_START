@@ -2,29 +2,15 @@ package com.example.mvp_autorskiy_start.ui.test
 
 import android.animation.ValueAnimator
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import androidx.activity.OnBackPressedCallback
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.mvp_autorskiy_start.R
 import com.example.mvp_autorskiy_start.databinding.FragmentTestResultBinding
+import com.example.mvp_autorskiy_start.ui.common.BaseFragment
 
-class TestResultFragment : Fragment() {
-
-    private var _binding: FragmentTestResultBinding? = null
-    private val binding get() = _binding!!
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentTestResultBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+class TestResultFragment : BaseFragment<FragmentTestResultBinding>(FragmentTestResultBinding::inflate) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -33,7 +19,6 @@ class TestResultFragment : Fragment() {
         val total = arguments?.getInt("total") ?: 0
         val moduleId = arguments?.getInt("moduleId", -1) ?: -1
 
-        // Анимированный счёт
         ValueAnimator.ofInt(0, score).apply {
             duration = 1000
             interpolator = DecelerateInterpolator()
@@ -66,11 +51,6 @@ class TestResultFragment : Fragment() {
         parentFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainer, TestMenuFragment())
             .commit()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     companion object {

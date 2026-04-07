@@ -1,10 +1,8 @@
 package com.example.mvp_autorskiy_start.ui.favorites
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
+import android.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mvp_autorskiy_start.R
 import com.example.mvp_autorskiy_start.data.repository.ArgumentsRepository
@@ -12,21 +10,9 @@ import com.example.mvp_autorskiy_start.data.repository.FavoritesRepository
 import com.example.mvp_autorskiy_start.databinding.FragmentFavoriteArgumentsBinding
 import com.example.mvp_autorskiy_start.ui.arguments.ArgumentsAdapter
 import com.example.mvp_autorskiy_start.data.models.Argument
-import android.app.AlertDialog
+import com.example.mvp_autorskiy_start.ui.common.BaseFragment
 
-class FavoriteArgumentsFragment : Fragment() {
-
-    private var _binding: FragmentFavoriteArgumentsBinding? = null
-    private val binding get() = _binding!!
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentFavoriteArgumentsBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+class FavoriteArgumentsFragment : BaseFragment<FragmentFavoriteArgumentsBinding>(FragmentFavoriteArgumentsBinding::inflate) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -68,10 +54,6 @@ class FavoriteArgumentsFragment : Fragment() {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
     private fun showArgumentDialog(argument: Argument) {
         val fullText = argument.fullText.trim()
         val isPlaceholder = fullText.startsWith("Полный текст") || fullText == "..." || fullText == "Полный текст..."

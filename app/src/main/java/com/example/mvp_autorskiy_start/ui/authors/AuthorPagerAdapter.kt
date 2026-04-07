@@ -14,7 +14,7 @@ class AuthorPagerAdapter(activity: FragmentActivity, private val author: Author)
         return when (position) {
             0 -> AuthorBioFragment.newInstance(author.bio)
             1 -> AuthorWorksFragment.newInstance(author.works)
-            2 -> AuthorArgumentsFragment.newInstance(author.works.flatMap { it.arguments })
+            2 -> ArgumentsListFragment.newInstance(author.works.flatMap { it.arguments })
             else -> throw IllegalStateException("Invalid position")
         }
     }

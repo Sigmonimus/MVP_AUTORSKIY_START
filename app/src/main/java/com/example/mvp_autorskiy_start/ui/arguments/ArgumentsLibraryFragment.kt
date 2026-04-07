@@ -1,36 +1,22 @@
 package com.example.mvp_autorskiy_start.ui.arguments
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mvp_autorskiy_start.databinding.FragmentArgumentsLibraryBinding
 import com.example.mvp_autorskiy_start.data.models.Argument
 import com.example.mvp_autorskiy_start.data.repository.ArgumentsRepository
 import com.example.mvp_autorskiy_start.data.models.Category
 import com.example.mvp_autorskiy_start.data.repository.FavoritesRepository
+import com.example.mvp_autorskiy_start.ui.common.BaseFragment
 import com.google.android.material.chip.Chip
 
-class ArgumentsLibraryFragment : Fragment() {
-
-    private var _binding: FragmentArgumentsLibraryBinding? = null
-    private val binding get() = _binding!!
+class ArgumentsLibraryFragment : BaseFragment<FragmentArgumentsLibraryBinding>(FragmentArgumentsLibraryBinding::inflate) {
 
     private lateinit var allCategories: List<Category>
     private lateinit var allArguments: List<Argument>
     private var currentCategoryId: Int = -1
     private var currentQuery: String = ""
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentArgumentsLibraryBinding.inflate(inflater, container, false)
-        return binding.root
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -101,7 +87,6 @@ class ArgumentsLibraryFragment : Fragment() {
     private fun updateArgumentsList() {
         var filtered = allArguments
 
-
         if (currentCategoryId != -1) {
             filtered = filtered.filter { it.categoryIds.contains(currentCategoryId) }
         }
@@ -118,9 +103,7 @@ class ArgumentsLibraryFragment : Fragment() {
         val adapter = ArgumentsAdapter(
             arguments = filtered,
             favoriteIds = favoriteIds,
-            onItemClick = { argument ->
-                showArgumentDialog(argument)
-            },
+            onItemClick = { argument -> showArgumentDialog(argument) },
             onFavoriteClick = { argument, isFavorite ->
                 if (isFavorite) {
                     FavoritesRepository.addFavoriteArgument(argument.id)
@@ -139,10 +122,5 @@ class ArgumentsLibraryFragment : Fragment() {
             .setMessage(argument.description)
             .setPositiveButton("OK", null)
             .show()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }

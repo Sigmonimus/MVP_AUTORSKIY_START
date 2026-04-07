@@ -12,7 +12,7 @@ import com.example.mvp_autorskiy_start.data.models.Argument
 import com.example.mvp_autorskiy_start.data.repository.FavoritesRepository
 import com.example.mvp_autorskiy_start.ui.arguments.ArgumentsAdapter
 
-class AuthorArgumentsFragment : Fragment() {
+class ArgumentsListFragment : Fragment() {
 
     private var _binding: FragmentWorkArgumentsBinding? = null
     private val binding get() = _binding!!
@@ -76,8 +76,8 @@ class AuthorArgumentsFragment : Fragment() {
     }
 
     companion object {
-        fun newInstance(arguments: List<Argument>): AuthorArgumentsFragment {
-            val fragment = AuthorArgumentsFragment()
+        fun newInstance(arguments: List<Argument>): ArgumentsListFragment {
+            val fragment = ArgumentsListFragment()
             val args = Bundle()
             args.putParcelableArrayList("arguments", ArrayList(arguments))
             fragment.arguments = args
