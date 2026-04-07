@@ -74,7 +74,6 @@ class FavoriteArgumentsFragment : Fragment() {
     }
     private fun showArgumentDialog(argument: Argument) {
         val fullText = argument.fullText.trim()
-        // Проверяем, является ли fullText плейсхолдером
         val isPlaceholder = fullText.startsWith("Полный текст") || fullText == "..." || fullText == "Полный текст..."
         val message = if (fullText.isNotBlank() && !isPlaceholder) fullText else argument.description
         AlertDialog.Builder(requireContext())

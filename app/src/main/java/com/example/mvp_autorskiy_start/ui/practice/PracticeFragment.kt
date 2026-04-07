@@ -156,7 +156,7 @@ class PracticeFragment : Fragment() {
             return
         }
 
-        // Заголовок — тема, если введена, иначе начало текста
+
         val title = if (theme.isNotEmpty()) {
             theme
         } else {
@@ -206,12 +206,10 @@ class PracticeFragment : Fragment() {
         draftsMap = if (json != null) {
             val trimmed = json.trim()
             if (trimmed.startsWith("[")) {
-                // Старый формат: список
                 val listType = object : TypeToken<MutableList<PracticeDraft>>() {}.type
                 val list: MutableList<PracticeDraft> = gson.fromJson(json, listType) ?: mutableListOf()
                 list.associateBy { it.id }.toMutableMap()
             } else {
-                // Новый формат: Map
                 val mapType = object : TypeToken<MutableMap<String, PracticeDraft>>() {}.type
                 gson.fromJson(json, mapType) ?: mutableMapOf()
             }
@@ -252,7 +250,6 @@ class PracticeFragment : Fragment() {
         prefs.edit().putString("drafts", json).apply()
     }
 
-    // ---------- ЧЕК-ЛИСТ ----------
     private fun setupChecklist() {
         checklistItems = mutableListOf(
             ChecklistItem("1. Тезис во вступлении (главная мысль)", false),

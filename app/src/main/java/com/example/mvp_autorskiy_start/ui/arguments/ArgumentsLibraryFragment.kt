@@ -20,7 +20,7 @@ class ArgumentsLibraryFragment : Fragment() {
 
     private lateinit var allCategories: List<Category>
     private lateinit var allArguments: List<Argument>
-    private var currentCategoryId: Int = -1 // -1 означает все
+    private var currentCategoryId: Int = -1
     private var currentQuery: String = ""
 
     override fun onCreateView(
@@ -65,7 +65,6 @@ class ArgumentsLibraryFragment : Fragment() {
 
     private fun setupChips() {
         binding.chipGroup.removeAllViews()
-        // Добавляем чип "Все"
         val allChip = Chip(requireContext()).apply {
             text = "Все"
             isCheckable = true
@@ -79,7 +78,6 @@ class ArgumentsLibraryFragment : Fragment() {
         }
         binding.chipGroup.addView(allChip)
 
-        // Добавляем чипы для каждой категории
         allCategories.forEach { category ->
             val chip = Chip(requireContext()).apply {
                 text = category.name
@@ -103,12 +101,11 @@ class ArgumentsLibraryFragment : Fragment() {
     private fun updateArgumentsList() {
         var filtered = allArguments
 
-        // Фильтр по категории
+
         if (currentCategoryId != -1) {
             filtered = filtered.filter { it.categoryIds.contains(currentCategoryId) }
         }
 
-        // Фильтр по поисковому запросу
         if (currentQuery.isNotEmpty()) {
             filtered = filtered.filter {
                 it.title.contains(currentQuery, ignoreCase = true) ||
@@ -122,7 +119,6 @@ class ArgumentsLibraryFragment : Fragment() {
             arguments = filtered,
             favoriteIds = favoriteIds,
             onItemClick = { argument ->
-                // Показать детали аргумента (можно диалог или новый экран)
                 showArgumentDialog(argument)
             },
             onFavoriteClick = { argument, isFavorite ->
@@ -131,7 +127,7 @@ class ArgumentsLibraryFragment : Fragment() {
                 } else {
                     FavoritesRepository.removeFavoriteArgument(argument.id)
                 }
-                updateArgumentsList() // обновить список (чтобы обновились звёздочки)
+                updateArgumentsList()
             }
         )
         binding.rvArguments.adapter = adapter

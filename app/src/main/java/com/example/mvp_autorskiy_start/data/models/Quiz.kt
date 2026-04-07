@@ -19,5 +19,5 @@ data class Quiz(
     val passingScore: Int,
     var bestScore: Int = 0,
     var isCompleted: Boolean = false,
-    var isUnlocked: Boolean = false   // новое поле
+    var isUnlocked: Boolean = false
 ) : Parcelable

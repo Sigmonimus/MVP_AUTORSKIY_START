@@ -52,7 +52,7 @@ class FavoriteEssaysFragment : Fragment() {
             val adapter = FavoriteEssaysAdapter(
                 essays = essays,
                 onItemClick = { essay -> showEssayDialog(essay) },
-                onDeleteClick = { essay -> deleteEssay(essay) }   // новый колбэк
+                onDeleteClick = { essay -> deleteEssay(essay) }
             )
             binding.rvEssays.adapter = adapter
         }

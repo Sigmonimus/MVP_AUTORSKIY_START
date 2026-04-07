@@ -19,7 +19,6 @@ object FavoritesRepository {
         prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     }
 
-    // ---------- Аргументы ----------
     fun getFavoriteArguments(): Set<Int> {
         val json = prefs.getString(KEY_FAVORITE_ARGUMENTS, null)
         return if (json != null) {
@@ -49,7 +48,6 @@ object FavoritesRepository {
 
     fun isArgumentFavorite(argumentId: Int): Boolean = argumentId in getFavoriteArguments()
 
-    // ---------- Сочинения ----------
     fun getSavedEssays(): List<SavedEssay> {
         val json = prefs.getString(KEY_FAVORITE_ESSAYS, null)
         return if (json != null) {
@@ -62,7 +60,6 @@ object FavoritesRepository {
 
     fun addSavedEssay(essay: SavedEssay) {
         val current = getSavedEssays().toMutableList()
-        // предотвращаем дубликаты (по id)
         if (current.none { it.id == essay.id }) {
             current.add(essay)
             saveSavedEssays(current)

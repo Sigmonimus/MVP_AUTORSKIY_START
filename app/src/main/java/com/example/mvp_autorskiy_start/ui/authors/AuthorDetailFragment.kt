@@ -36,17 +36,14 @@ class AuthorDetailFragment : Fragment() {
             arguments?.getParcelable<Author>("author")
         } ?: return
 
-        // Устанавливаем изображение
         binding.ivAuthorImage.setImageResource(author.imageRes)
 
-        // Настраиваем тулбар
         (requireActivity() as AppCompatActivity).setSupportActionBar(binding.toolbar)
         (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
         binding.collapsingToolbar.title = shortenName(author.name)
 
-        // Проверяем, есть ли в разметке ViewPager2 и TabLayout
         try {
-            // Настройка ViewPager и TabLayout
+
             val pagerAdapter = AuthorPagerAdapter(requireActivity(), author)
             binding.viewPager.adapter = pagerAdapter
 
@@ -60,7 +57,6 @@ class AuthorDetailFragment : Fragment() {
             }.attach()
         } catch (e: Exception) {
             Log.e("AuthorDetail", "ViewPager or TabLayout not found in layout. Please check fragment_author_detail.xml")
-            // Если ViewPager отсутствует, можно отобразить биографию в contentContainer
             val bioFragment = AuthorBioFragment.newInstance(author.bio)
             childFragmentManager.beginTransaction()
                 .replace(R.id.contentContainer, bioFragment)
@@ -86,8 +82,8 @@ class AuthorDetailFragment : Fragment() {
         val parts = fullName.split(" ")
         return when (parts.size) {
             1 -> fullName
-            2 -> "${parts[0].first()}. ${parts[1]}"                // И. Фамилия
-            3 -> "${parts[0].first()}.${parts[1].first()}. ${parts[2]}" // И.О. Фамилия
+            2 -> "${parts[0].first()}. ${parts[1]}"
+            3 -> "${parts[0].first()}.${parts[1].first()}. ${parts[2]}"
             else -> fullName
         }
     }

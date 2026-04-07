@@ -8,7 +8,7 @@ data class SavedEssay(
     val id: String,
     val title: String,
     val content: String,
-    val author: String,  // можно оставить "Моё сочинение"
-    val theme: String,   // тема сочинения
+    val author: String,
+    val theme: String,
     val date: Long
 ) : Parcelable

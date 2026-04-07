@@ -10,7 +10,7 @@ data class Module(
     val description: String,
     val iconRes: Int,
     val questions: List<Question>,
-    val passingScore: Int,        // проходной балл в процентах (0-100)
+    val passingScore: Int,
     var isUnlocked: Boolean = false,
     var isCompleted: Boolean = false,
     var bestScore: Int = 0

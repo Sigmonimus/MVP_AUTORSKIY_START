@@ -50,7 +50,6 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // ---------- МУЗЫКА ----------
         val switchMusic = binding.switchMusic
         var isSwitchInitialized = false
         switchMusic.isChecked = MusicPlayerManager.isEnabled()
@@ -61,8 +60,6 @@ class ProfileFragment : Fragment() {
                 isSwitchInitialized = true
             }
         }
-
-        // Настройка спиннера выбора трека
         val trackNames = MusicPlayerManager.getTracks().map { it.name }
         if (trackNames.isNotEmpty()) {
             val trackAdapter =
@@ -87,30 +84,24 @@ class ProfileFragment : Fragment() {
                 binding.spinnerTrack.setSelection(index)
             }
         } else {
-            // Нет треков – скрываем спиннер
             binding.spinnerTrack.visibility = View.GONE
         }
 
-        // ---------- ЗАГРУЗКА ДАННЫХ ----------
         loadUserInfo()
         loadAvatar()
         loadStatistics()
         loadSettings()
 
-        // Редактирование имени по клику на текст
         binding.tvUserName.setOnClickListener {
             showEditNameDialog()
         }
 
-        // Редактирование email по клику на блок
         binding.llEmail.setOnClickListener { showEditEmailDialog() }
 
-        // Выбор аватара из галереи
         binding.ivAvatar.setOnClickListener {
             pickImageLauncher.launch("image/*")
         }
 
-        // Остальные настройки
         binding.llLanguage.setOnClickListener { showLanguageDialog() }
         binding.switchNotifications.setOnCheckedChangeListener { _, isChecked ->
             prefs.edit().putBoolean("notifications_enabled", isChecked).apply()
@@ -118,7 +109,6 @@ class ProfileFragment : Fragment() {
         binding.btnClearDrafts.setOnClickListener { showClearDraftsConfirmation() }
     }
 
-    // ---------- ЗАГРУЗКА ДАННЫХ ----------
     private fun loadUserInfo() {
         val userName = prefs.getString("user_name", "Александр Сергеевич")
         binding.tvUserName.text = userName
@@ -195,11 +185,9 @@ class ProfileFragment : Fragment() {
         return if (json != null) {
             val trimmed = json.trim()
             if (trimmed.startsWith("[")) {
-                // Старый формат: список
                 val listType = object : TypeToken<MutableList<PracticeDraft>>() {}.type
                 gson.fromJson(json, listType) ?: emptyList()
             } else {
-                // Новый формат: Map
                 val mapType = object : TypeToken<MutableMap<String, PracticeDraft>>() {}.type
                 val map: MutableMap<String, PracticeDraft> = gson.fromJson(json, mapType) ?: mutableMapOf()
                 map.values.toList()
@@ -209,7 +197,6 @@ class ProfileFragment : Fragment() {
         }
     }
 
-    // ---------- ДИАЛОГИ ----------
     private fun showEditNameDialog() {
         val dialogView = LayoutInflater.from(requireContext()).inflate(com.example.mvp_autorskiy_start.R.layout.dialog_edit_name, null)
         val editText = dialogView.findViewById<EditText>(com.example.mvp_autorskiy_start.R.id.etName)
@@ -256,7 +243,6 @@ class ProfileFragment : Fragment() {
         AlertDialog.Builder(requireContext())
             .setTitle("Выберите язык")
             .setItems(arrayOf("Русский")) { _, _ ->
-                // пока только русский
             }
             .show()
     }

@@ -92,8 +92,8 @@ class PathMapView @JvmOverloads constructor(
     private var glowingPointIndex = -1
 
     // Background color animation (day/night cycle)
-    private val bgColorStart = Color.parseColor("#F5E6D3")  // тёплый
-    private val bgColorEnd = Color.parseColor("#E8DDC0")    // прохладный
+    private val bgColorStart = Color.parseColor("#F5E6D3")
+    private val bgColorEnd = Color.parseColor("#E8DDC0")
     private var currentBgColor = bgColorStart
     private val bgAnimator = ValueAnimator.ofArgb(bgColorStart, bgColorEnd).apply {
         duration = 180000 // 3 минуты
@@ -106,20 +106,17 @@ class PathMapView @JvmOverloads constructor(
         }
     }
 
-    // Background parchment paint (color will be set each frame)
     private val parchmentPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.FILL }
     private val grainPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.argb(30, 100, 70, 30)
         style = Paint.Style.FILL
     }
 
-    // Decorations drawables
     private var bookPointDrawable: Drawable? = null
     private var quillTreeDrawable: Drawable? = null
     private var openBookHillDrawable: Drawable? = null
     private var lampDrawable: Drawable? = null
 
-    // Lamp flicker
     private var lampAlpha = 1f
     private val lampFlickerAnim = ValueAnimator.ofFloat(0.7f, 1f).apply {
         duration = 3000
@@ -131,12 +128,10 @@ class PathMapView @JvmOverloads constructor(
         }
     }
 
-    // Floating feathers
     private data class Feather(var x: Float, var y: Float, var alpha: Float, var vx: Float, var vy: Float)
     private val feathers = mutableListOf<Feather>()
     private var featherAnimator: ValueAnimator? = null
 
-    // Golden sparkles on tap
     private data class Sparkle(var x: Float, var y: Float, var vx: Float, var vy: Float, var life: Float)
     private val sparkles = mutableListOf<Sparkle>()
     private var sparkleAnimator: ValueAnimator? = null
@@ -167,7 +162,7 @@ class PathMapView @JvmOverloads constructor(
         }
 
         featherAnimator = ValueAnimator.ofFloat(0f, 1f).apply {
-            duration = 30000 // 30 seconds cycle
+            duration = 30000
             repeatCount = ValueAnimator.INFINITE
             interpolator = LinearInterpolator()
             addUpdateListener {
@@ -193,11 +188,10 @@ class PathMapView @JvmOverloads constructor(
         }
     }
 
-    // Sparkle methods
     private fun startSparkleAnimation() {
         if (sparkleAnimator?.isRunning == true) return
         sparkleAnimator = ValueAnimator.ofFloat(0f, 1f).apply {
-            duration = 40 // update every 40 ms
+            duration = 40
             repeatCount = ValueAnimator.INFINITE
             addUpdateListener {
                 updateSparkles()
@@ -358,11 +352,9 @@ class PathMapView @JvmOverloads constructor(
         super.onDraw(canvas)
         if (quizzes.isEmpty() || pointPositions.size != quizzes.size) return
 
-        // 1. Parchment background with animated color
         parchmentPaint.color = currentBgColor
         canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), parchmentPaint)
 
-        // 2. Subtle grain texture (static)
         val random = java.util.Random(System.currentTimeMillis())
         for (i in 0 until 150) {
             val x = random.nextInt(width)
@@ -370,24 +362,19 @@ class PathMapView @JvmOverloads constructor(
             grainPaint.color = Color.argb(20 + random.nextInt(30), 80, 60, 30)
             canvas.drawCircle(x.toFloat(), y.toFloat(), 1.5f, grainPaint)
         }
-
-        // 3. Decorations (quills, open books) behind path
         drawDecorations(canvas)
 
-        // 4. Path with shadow and animated drawing
         canvas.drawPath(fullPath, paintPathShadow)
         canvas.save()
         canvas.clipPath(clipPath)
         canvas.drawPath(fullPath, paintPath)
         canvas.restore()
 
-        // 5. Points (books) and labels
         for ((index, pos) in pointPositions.withIndex()) {
             drawPoint(canvas, pos, quizzes[index], index)
             drawLabel(canvas, pos, quizzes[index])
         }
 
-        // 6. Floating feathers (very slow drift)
         for (feather in feathers) {
             val alpha = (feather.alpha * 150).toInt()
             val paintFeather = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -402,7 +389,6 @@ class PathMapView @JvmOverloads constructor(
             canvas.drawCircle(feather.x, feather.y, 2f, paintFeather)
         }
 
-        // 7. Golden sparkles on tap
         for (s in sparkles) {
             val alpha = (s.life * 200).toInt().coerceIn(0, 255)
             val paintSparkle = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -413,7 +399,6 @@ class PathMapView @JvmOverloads constructor(
             canvas.drawCircle(s.x, s.y, radius, paintSparkle)
         }
 
-        // 8. Lamp of knowledge (with flicker)
         drawLamp(canvas)
     }
 
@@ -539,7 +524,7 @@ class PathMapView @JvmOverloads constructor(
                 if (dx * dx + dy * dy < touchRadius * touchRadius) {
                     val quiz = quizzes[index]
                     if (quiz.isUnlocked) {
-                        addSparkles(pos.x, pos.y)   // золотые искры
+                        addSparkles(pos.x, pos.y)
                         onQuizClickListener?.invoke(quiz)
                     } else {
                         Toast.makeText(context, "Сначала пройдите предыдущий тест", Toast.LENGTH_SHORT).show()

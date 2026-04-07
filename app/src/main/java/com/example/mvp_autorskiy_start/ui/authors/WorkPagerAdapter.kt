@@ -12,9 +12,9 @@ class WorkPagerAdapter(activity: FragmentActivity, private val work: Work) :
 
     override fun createFragment(position: Int): Fragment {
         return when (position) {
-            0 -> WorkSummaryFragment.newInstance(work.summary)          // строка – без изменений
-            1 -> WorkFullTextFragment.newInstance(work.id)             // изменено: передаём work.id
-            2 -> WorkArgumentsFragment.newInstance(work.arguments)      // список аргументов – без изменений
+            0 -> WorkSummaryFragment.newInstance(work.summary)
+            1 -> WorkFullTextFragment.newInstance(work.id)
+            2 -> WorkArgumentsFragment.newInstance(work.arguments)
             else -> throw IllegalStateException("Invalid position")
         }
     }

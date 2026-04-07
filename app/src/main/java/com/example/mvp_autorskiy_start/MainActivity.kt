@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.mvp_autorskiy_start.data.repository.FavoritesRepository
 import com.example.mvp_autorskiy_start.data.repository.QuizRepository
-import com.example.mvp_autorskiy_start.data.repository.TestModuleRepository
 import com.example.mvp_autorskiy_start.ui.test.TestMenuFragment
 import com.example.mvp_autorskiy_start.ui.arguments.ArgumentsLibraryFragment
 import com.example.mvp_autorskiy_start.ui.authors.AuthorsFragment
@@ -32,9 +31,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        TestModuleRepository.init(this)
         QuizRepository.init(this)
-        // Инициализация музыки (App уже вызвал init, но для надёжности вызываем ещё раз – безопасно)
         MusicPlayerManager.init(this)
 
         drawerLayout = findViewById(R.id.drawerLayout)
@@ -104,7 +101,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
-                // Закрыть шторку, если она открыта, или вернуться к предыдущему фрагменту
                 if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
                     drawerLayout.closeDrawer(GravityCompat.START)
                 } else {

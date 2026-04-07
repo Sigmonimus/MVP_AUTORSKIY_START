@@ -36,11 +36,9 @@ class AuthorWorksFragment : Fragment() {
             arguments?.getParcelableArrayList<Work>("works") ?: emptyList()
         }
 
-        // Логирование для отладки
         Log.d("AuthorWorks", "Received works count: ${works.size}")
         works.forEach { Log.d("AuthorWorks", "Work: ${it.title}") }
 
-        // Важно: устанавливаем LayoutManager
         binding.rvWorks.layoutManager = LinearLayoutManager(requireContext())
 
         val adapter = WorksAdapter(works) { work ->

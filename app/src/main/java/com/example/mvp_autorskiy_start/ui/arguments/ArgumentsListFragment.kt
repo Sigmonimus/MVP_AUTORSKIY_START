@@ -54,11 +54,10 @@ class ArgumentsListFragment : Fragment() {
     private fun updateAdapter() {
         val filteredArguments = allArguments.filter { it.categoryIds.contains(categoryId) }
         val favoriteIds = FavoritesRepository.getFavoriteArguments()
-        val adapter = ArgumentsAdapter(   // исправлено имя
+        val adapter = ArgumentsAdapter(
             arguments = filteredArguments,
             favoriteIds = favoriteIds,
             onItemClick = { argument ->
-                // TODO: открыть детальный экран аргумента
             },
             onFavoriteClick = { argument, isFavorite ->
                 if (isFavorite) {

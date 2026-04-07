@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mvp_autorskiy_start.databinding.FragmentWorkArgumentsBinding
 import com.example.mvp_autorskiy_start.data.models.Argument
 import com.example.mvp_autorskiy_start.data.repository.FavoritesRepository
-import com.example.mvp_autorskiy_start.ui.arguments.ArgumentsAdapter   // исправленный импорт
+import com.example.mvp_autorskiy_start.ui.arguments.ArgumentsAdapter
 
 class AuthorArgumentsFragment : Fragment() {
 
@@ -44,7 +44,7 @@ class AuthorArgumentsFragment : Fragment() {
 
     private fun updateAdapter() {
         val favoriteIds = FavoritesRepository.getFavoriteArguments()
-        val adapter = ArgumentsAdapter(   // исправлено имя
+        val adapter = ArgumentsAdapter(
             arguments = argumentsList,
             favoriteIds = favoriteIds,
             onItemClick = { argument ->

@@ -28,14 +28,10 @@ class TheoryDetailFragment : Fragment() {
 
         val subsectionKey = arguments?.getString("subsectionKey") ?: return
         val markdown = TheoryRepository.getMarkdown(requireContext(), subsectionKey)
-
-        // Конвертируем Markdown в HTML
         val parser = Parser.builder().build()
         val document: Node = parser.parse(markdown)
         val renderer = HtmlRenderer.builder().build()
         val html = renderer.render(document)
-
-        // Обновлённый CSS с коричневой гаммой и поддержкой тёмной темы
         val styledHtml = """
         <html>
         <head>

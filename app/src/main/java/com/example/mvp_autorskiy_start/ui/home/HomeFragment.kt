@@ -54,10 +54,8 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Запускаем асинхронную загрузку данных
         homeViewModel.loadData(requireContext())
 
-        // Наблюдаем за результатами
         homeViewModel.randomQuote.observe(viewLifecycleOwner) { quote ->
             binding.quoteText.text = "«${quote.text}»"
             binding.quoteAuthor.text = "— ${quote.author}"
@@ -66,11 +64,10 @@ class HomeFragment : Fragment() {
             binding.tipText.text = tip
         }
 
-        // Быстрые операции (чтение SharedPreferences, установка картинки)
         loadUserInfo()
         loadRandomIllustration()
         setupSettingsClick()
-        setupCalendar() // если календарь уже реализован и не тормозит
+        setupCalendar()
     }
 
     private fun loadUserInfo() {
@@ -99,12 +96,6 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupCalendar() {
-        // Если календарь активности тормозит, его тоже нужно вынести в ViewModel
-        // Пример:
-        // homeViewModel.activeDates.observe(viewLifecycleOwner) { dates ->
-        //     binding.activityCalendar.layoutManager = GridLayoutManager(requireContext(), 7)
-        //     binding.activityCalendar.adapter = CalendarAdapter(dates)
-        // }
     }
 
     override fun onDestroyView() {

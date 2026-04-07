@@ -17,7 +17,7 @@ class ArgumentsAdapter(
 ) : RecyclerView.Adapter<ArgumentsAdapter.ArgumentViewHolder>() {
 
     class ArgumentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val ivImage: ImageView = itemView.findViewById(R.id.ivArgumentImage)  // добавлено
+        val ivImage: ImageView = itemView.findViewById(R.id.ivArgumentImage)
         val tvTitle: TextView = itemView.findViewById(R.id.tvTitle)
         val tvWorkAuthor: TextView = itemView.findViewById(R.id.tvWorkAuthor)
         val tvDescription: TextView = itemView.findViewById(R.id.tvDescription)
@@ -36,13 +36,12 @@ class ArgumentsAdapter(
         holder.tvWorkAuthor.text = "${argument.workTitle} – ${argument.author}"
         holder.tvDescription.text = argument.description
 
-        // Устанавливаем изображение
         if (argument.imageRes != 0) {
             holder.ivImage.setImageResource(argument.imageRes)
             holder.ivImage.visibility = View.VISIBLE
         } else {
             holder.ivImage.setImageResource(R.drawable.ic_default_argument)
-            holder.ivImage.visibility = View.VISIBLE   // или GONE, если не хотите показывать
+            holder.ivImage.visibility = View.VISIBLE
         }
 
         val isFavorite = favoriteIds.contains(argument.id)

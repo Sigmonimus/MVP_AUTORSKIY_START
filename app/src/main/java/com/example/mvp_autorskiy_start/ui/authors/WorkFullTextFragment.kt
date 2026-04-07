@@ -35,10 +35,10 @@ class WorkFullTextFragment : Fragment() {
         binding.progressBar.visibility = View.VISIBLE
         binding.webView.visibility = View.GONE
 
-        // Настройка WebView
+
         binding.webView.settings.apply {
-            builtInZoomControls = true      // позволяет увеличивать/уменьшать пальцами
-            displayZoomControls = false     // скрываем кнопки зума (они и так есть)
+            builtInZoomControls = true
+            displayZoomControls = false
             loadWithOverviewMode = true
             useWideViewPort = true
         }
@@ -48,9 +48,7 @@ class WorkFullTextFragment : Fragment() {
             val fullText = withContext(Dispatchers.IO) {
                 AuthorsRepository.loadFullText(requireContext(), workId)
             }
-            // Конвертируем переносы строк в HTML <br> для читаемости
             val htmlText = fullText.replace("\n", "<br>")
-            // Увеличиваем шрифт и добавляем удобные отступы
             val html = """
                 <html>
                 <head>

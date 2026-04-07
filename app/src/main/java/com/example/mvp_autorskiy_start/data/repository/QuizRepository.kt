@@ -50,12 +50,10 @@ object QuizRepository {
             )
         }
 
-        // Первый всегда разблокирован
         if (quizzes.isNotEmpty() && !isQuizUnlocked(quizzes[0].id)) {
             setQuizUnlocked(quizzes[0].id, true)
         }
 
-        // Последовательная разблокировка: i-й тест открыт, если i-1 пройден с passingScore
         for (i in 1 until quizzes.size) {
             val prev = quizzes[i - 1]
             val prevPassed = prev.isCompleted && prev.bestScore >= prev.passingScore
@@ -70,7 +68,6 @@ object QuizRepository {
             }
         }
 
-        // Обновляем объекты актуальными значениями unlocked
         return quizzes.map { quiz ->
             quiz.copy(isUnlocked = isQuizUnlocked(quiz.id))
         }
@@ -124,7 +121,6 @@ object QuizRepository {
 
     private fun getQuizPassingScore(quizId: Int): Int = 70
 
-    // Вспомогательные классы для парсинга JSON
     private data class QuizJson(
         val id: Int,
         val title: String,

@@ -14,7 +14,7 @@ import java.util.*
 class FavoriteEssaysAdapter(
     private val essays: List<SavedEssay>,
     private val onItemClick: (SavedEssay) -> Unit,
-    private val onDeleteClick: (SavedEssay) -> Unit   // новый колбэк
+    private val onDeleteClick: (SavedEssay) -> Unit
 ) : RecyclerView.Adapter<FavoriteEssaysAdapter.EssayViewHolder>() {
 
     private val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
@@ -23,7 +23,7 @@ class FavoriteEssaysAdapter(
         val tvTitle: TextView = itemView.findViewById(R.id.tvEssayTitle)
         val tvTheme: TextView = itemView.findViewById(R.id.tvEssayTheme)
         val tvDate: TextView = itemView.findViewById(R.id.tvEssayDate)
-        val btnDelete: ImageView = itemView.findViewById(R.id.btnDeleteEssay)   // новая иконка
+        val btnDelete: ImageView = itemView.findViewById(R.id.btnDeleteEssay)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EssayViewHolder {

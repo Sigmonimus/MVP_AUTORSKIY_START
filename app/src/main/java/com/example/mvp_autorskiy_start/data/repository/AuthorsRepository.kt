@@ -41,7 +41,7 @@ object AuthorsRepository {
             years = years,
             bio = bio,
             imageRes = ResourceMapper.getDrawableResId(imageRes),
-            works = works.map { it.toWork(name) } // передаём имя автора
+            works = works.map { it.toWork(name) }
         )
     }
 
@@ -62,7 +62,7 @@ object AuthorsRepository {
                     authorName,
                     title
                 )
-            } // передаём автора и название произведения
+            }
         )
     }
 
@@ -77,8 +77,8 @@ object AuthorsRepository {
             description = description,
             workTitle = workTitle,
             author = authorName,
-            fullText = "",            // в JSON авторов полного текста нет
-            categoryIds = emptyList() // категории для аргументов авторов не заданы
+            fullText = "",
+            categoryIds = emptyList()
         )
     }
     fun loadFullText(context: Context, workId: Int): String {

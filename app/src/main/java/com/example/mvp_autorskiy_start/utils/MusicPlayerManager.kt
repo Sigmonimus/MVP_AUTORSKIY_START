@@ -97,9 +97,6 @@ object MusicPlayerManager {
     }
 
     fun pause() {
-        // При выключении музыки мы будем полностью освобождать плеер,
-        // поэтому этот метод будет вызываться только из setEnabled(false) и release().
-        // Вручную его вызывать не нужно.
         if (mediaPlayer != null && playing) {
             try {
                 mediaPlayer?.pause()
@@ -127,13 +124,11 @@ object MusicPlayerManager {
     fun setEnabled(enabled: Boolean) {
         this.enabled = enabled
         if (enabled) {
-            // При включении создаём плеер, если его нет
             if (mediaPlayer == null) {
                 createPlayer(currentTrackIndex)
             }
             start()
         } else {
-            // При выключении полностью освобождаем плеер
             release()
         }
         savePreferences()

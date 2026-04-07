@@ -41,7 +41,7 @@ object ArgumentsRepository {
         val description: String,
         val fullText: String,
         val categoryIds: List<Int>,
-        val image: String? = null   // новое поле
+        val image: String? = null
     ) {
         fun toArgument(): Argument = Argument(
             id = id,
