@@ -2,4 +2,5 @@
     <string name="app_name">Авторский старт</string>
     <string name="arguments_count">%d аргументов</string>
     <string name="essays_count">%d сочинений</string>
+    <string name="author_photo">Фото автора</string>
 </resources>

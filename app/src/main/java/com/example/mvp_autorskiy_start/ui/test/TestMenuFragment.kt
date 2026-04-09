@@ -3,6 +3,7 @@ package com.example.mvp_autorskiy_start.ui.test
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Lifecycle
 import com.example.mvp_autorskiy_start.R
 import com.example.mvp_autorskiy_start.databinding.FragmentTestMenuBinding
 import com.example.mvp_autorskiy_start.data.repository.QuizRepository
@@ -51,7 +52,9 @@ class TestMenuFragment : BaseFragment<FragmentTestMenuBinding>(FragmentTestMenuB
         val firstUnlocked = quizzes.indexOfFirst { it.isUnlocked && !it.isCompleted }
         if (firstUnlocked != -1) {
             pathMapView.post {
-                binding.scrollView.smoothScrollTo(0, (pathMapView.getPointY(firstUnlocked) - 200).toInt())
+                if (isAdded && viewLifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+                    binding.scrollView.smoothScrollTo(0, (pathMapView.getPointY(firstUnlocked) - 200).toInt())
+                }
             }
         }
     }

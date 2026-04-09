@@ -11,14 +11,6 @@
         android:orientation="vertical">
 
         <!-- Заголовок -->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Профиль"
-            android:textSize="28sp"
-            android:textStyle="bold"
-            android:gravity="center"
-            android:layout_marginBottom="24dp" />
 
         <!-- Аватар, имя и кнопка -->
         <LinearLayout

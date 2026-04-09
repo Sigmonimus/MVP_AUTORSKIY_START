@@ -2,7 +2,6 @@ package com.example.mvp_autorskiy_start.ui.authors
 
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import com.example.mvp_autorskiy_start.databinding.FragmentAuthorDetailBinding
 import com.example.mvp_autorskiy_start.data.models.Author
 import com.example.mvp_autorskiy_start.ui.common.BaseFragment
@@ -21,10 +20,7 @@ class AuthorDetailFragment : BaseFragment<FragmentAuthorDetailBinding>(FragmentA
         } ?: return
 
         binding.ivAuthorImage.setImageResource(author.imageRes)
-
-        (requireActivity() as AppCompatActivity).setSupportActionBar(binding.toolbar)
-        (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        binding.collapsingToolbar.title = shortenName(author.name)
+        binding.tvAuthorName.text = author.name
 
         val pagerAdapter = AuthorPagerAdapter(requireActivity(), author)
         binding.viewPager.adapter = pagerAdapter
@@ -37,16 +33,6 @@ class AuthorDetailFragment : BaseFragment<FragmentAuthorDetailBinding>(FragmentA
                 else -> ""
             }
         }.attach()
-    }
-
-    private fun shortenName(fullName: String): String {
-        val parts = fullName.split(" ")
-        return when (parts.size) {
-            1 -> fullName
-            2 -> "${parts[0].first()}. ${parts[1]}"
-            3 -> "${parts[0].first()}.${parts[1].first()}. ${parts[2]}"
-            else -> fullName
-        }
     }
 
     companion object {

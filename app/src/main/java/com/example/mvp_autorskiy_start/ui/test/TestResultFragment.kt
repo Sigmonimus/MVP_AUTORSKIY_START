@@ -6,11 +6,14 @@ import android.view.View
 import android.view.animation.DecelerateInterpolator
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.Lifecycle
 import com.example.mvp_autorskiy_start.R
 import com.example.mvp_autorskiy_start.databinding.FragmentTestResultBinding
 import com.example.mvp_autorskiy_start.ui.common.BaseFragment
 
 class TestResultFragment : BaseFragment<FragmentTestResultBinding>(FragmentTestResultBinding::inflate) {
+
+    private var scoreAnimator: ValueAnimator? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -19,11 +22,13 @@ class TestResultFragment : BaseFragment<FragmentTestResultBinding>(FragmentTestR
         val total = arguments?.getInt("total") ?: 0
         val moduleId = arguments?.getInt("moduleId", -1) ?: -1
 
-        ValueAnimator.ofInt(0, score).apply {
+        scoreAnimator = ValueAnimator.ofInt(0, score).apply {
             duration = 1000
             interpolator = DecelerateInterpolator()
             addUpdateListener { animator ->
-                binding.tvScore.text = "${animator.animatedValue}/$total"
+                if (isAdded && viewLifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+                    binding.tvScore.text = "${animator.animatedValue}/$total"
+                }
             }
             start()
         }
@@ -51,6 +56,12 @@ class TestResultFragment : BaseFragment<FragmentTestResultBinding>(FragmentTestR
         parentFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainer, TestMenuFragment())
             .commit()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        scoreAnimator?.cancel()
+        scoreAnimator = null
     }
 
     companion object {

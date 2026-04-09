@@ -2,21 +2,12 @@ package com.example.mvp_autorskiy_start.ui.test
 
 import android.animation.ValueAnimator
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.DashPathEffect
-import android.graphics.Paint
-import android.graphics.Path
-import android.graphics.PathMeasure
-import android.graphics.PointF
-import android.graphics.Rect
-import android.graphics.Typeface
+import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.DecelerateInterpolator
-import android.view.animation.LinearInterpolator
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.example.mvp_autorskiy_start.R
@@ -24,7 +15,6 @@ import com.example.mvp_autorskiy_start.data.models.Quiz
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
-import kotlin.random.Random
 
 class PathMapView @JvmOverloads constructor(
     context: Context,
@@ -33,7 +23,7 @@ class PathMapView @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr) {
 
     private var quizzes: List<Quiz> = emptyList()
-    private var pointPositions = mutableListOf<PointF>()
+    private val pointPositions = mutableListOf<PointF>()
     private val fullPath = Path()
     private var clipPath = Path()
     private var pathProgress = 0f
@@ -45,19 +35,16 @@ class PathMapView @JvmOverloads constructor(
     private var pointRadius = 48f
     private val touchRadius = 80f
 
-    // Paints
     private val paintPath = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
         strokeWidth = 12f
         color = Color.argb(200, 160, 100, 60)
         strokeCap = Paint.Cap.ROUND
-        pathEffect = DashPathEffect(floatArrayOf(20f, 15f), 0f)
     }
     private val paintPathShadow = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
         strokeWidth = 14f
         color = Color.argb(80, 0, 0, 0)
-        strokeCap = Paint.Cap.ROUND
         setShadowLayer(8f, 0f, 3f, Color.argb(100, 0, 0, 0))
     }
     private val paintText = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -79,10 +66,11 @@ class PathMapView @JvmOverloads constructor(
         color = Color.argb(80, 0, 0, 0)
         setShadowLayer(12f, 0f, 4f, Color.argb(120, 0, 0, 0))
     }
-
-    // Glow paint (pulsing circle)
+    private val paintPointBg = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.parseColor("#F5E6D3")
+    }
     private val paintGlow = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.argb(100, 255, 215, 0)
+        color = Color.argb(200, 255, 215, 0)
         style = Paint.Style.STROKE
         strokeWidth = 8f
         setShadowLayer(16f, 0f, 0f, Color.argb(200, 255, 215, 0))
@@ -91,50 +79,10 @@ class PathMapView @JvmOverloads constructor(
     private var glowAlpha = 0f
     private var glowingPointIndex = -1
 
-    // Background color animation (day/night cycle)
-    private val bgColorStart = Color.parseColor("#F5E6D3")
-    private val bgColorEnd = Color.parseColor("#E8DDC0")
-    private var currentBgColor = bgColorStart
-    private val bgAnimator = ValueAnimator.ofArgb(bgColorStart, bgColorEnd).apply {
-        duration = 180000 // 3 минуты
-        repeatCount = ValueAnimator.INFINITE
-        repeatMode = ValueAnimator.REVERSE
-        interpolator = LinearInterpolator()
-        addUpdateListener {
-            currentBgColor = it.animatedValue as Int
-            invalidate()
-        }
-    }
-
-    private val parchmentPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.FILL }
-    private val grainPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.argb(30, 100, 70, 30)
-        style = Paint.Style.FILL
-    }
-
     private var bookPointDrawable: Drawable? = null
     private var quillTreeDrawable: Drawable? = null
     private var openBookHillDrawable: Drawable? = null
     private var lampDrawable: Drawable? = null
-
-    private var lampAlpha = 1f
-    private val lampFlickerAnim = ValueAnimator.ofFloat(0.7f, 1f).apply {
-        duration = 3000
-        repeatCount = ValueAnimator.INFINITE
-        repeatMode = ValueAnimator.REVERSE
-        addUpdateListener {
-            lampAlpha = it.animatedValue as Float
-            invalidate()
-        }
-    }
-
-    private data class Feather(var x: Float, var y: Float, var alpha: Float, var vx: Float, var vy: Float)
-    private val feathers = mutableListOf<Feather>()
-    private var featherAnimator: ValueAnimator? = null
-
-    private data class Sparkle(var x: Float, var y: Float, var vx: Float, var vy: Float, var life: Float)
-    private val sparkles = mutableListOf<Sparkle>()
-    private var sparkleAnimator: ValueAnimator? = null
 
     private var onQuizClickListener: ((Quiz) -> Unit)? = null
 
@@ -143,92 +91,6 @@ class PathMapView @JvmOverloads constructor(
         quillTreeDrawable = ContextCompat.getDrawable(context, R.drawable.ic_quill_tree)
         openBookHillDrawable = ContextCompat.getDrawable(context, R.drawable.ic_open_book_hill)
         lampDrawable = ContextCompat.getDrawable(context, R.drawable.ic_lamp_knowledge)
-
-        lampFlickerAnim.start()
-        bgAnimator.start()
-        startFeatherAnimation()
-    }
-
-    private fun startFeatherAnimation() {
-        val width = width.toFloat()
-        val height = height.toFloat()
-        for (i in 0..4) {
-            val x = Random.Default.nextFloat() * width
-            val y = Random.Default.nextFloat() * height
-            val alpha = 0.3f + Random.Default.nextFloat() * 0.5f
-            val vx = (Random.Default.nextFloat() - 0.5f) * 0.3f
-            val vy = (Random.Default.nextFloat() - 0.5f) * 0.3f
-            feathers.add(Feather(x, y, alpha, vx, vy))
-        }
-
-        featherAnimator = ValueAnimator.ofFloat(0f, 1f).apply {
-            duration = 30000
-            repeatCount = ValueAnimator.INFINITE
-            interpolator = LinearInterpolator()
-            addUpdateListener {
-                updateFeathers()
-                invalidate()
-            }
-            start()
-        }
-    }
-
-    private fun updateFeathers() {
-        val width = width.toFloat()
-        val height = height.toFloat()
-        for (f in feathers) {
-            f.x += f.vx
-            f.y += f.vy
-            if (f.x < -50f) f.x = width + 50f
-            if (f.x > width + 50f) f.x = -50f
-            if (f.y < -50f) f.y = height + 50f
-            if (f.y > height + 50f) f.y = -50f
-            f.alpha += (Random.Default.nextFloat() - 0.5f) * 0.02f
-            f.alpha = f.alpha.coerceIn(0.2f, 0.8f)
-        }
-    }
-
-    private fun startSparkleAnimation() {
-        if (sparkleAnimator?.isRunning == true) return
-        sparkleAnimator = ValueAnimator.ofFloat(0f, 1f).apply {
-            duration = 40
-            repeatCount = ValueAnimator.INFINITE
-            addUpdateListener {
-                updateSparkles()
-                invalidate()
-            }
-            start()
-        }
-    }
-
-    private fun stopSparkleAnimation() {
-        sparkleAnimator?.cancel()
-        sparkleAnimator = null
-    }
-
-    private fun updateSparkles() {
-        sparkles.removeAll { it.life <= 0f }
-        for (s in sparkles) {
-            s.x += s.vx
-            s.y += s.vy
-            s.life -= 0.05f
-        }
-        if (sparkles.isEmpty()) {
-            stopSparkleAnimation()
-        }
-    }
-
-    private fun addSparkles(centerX: Float, centerY: Float) {
-        val count = 8 + Random.Default.nextInt(5) // 8–12 sparkles
-        repeat(count) {
-            val angle = Random.Default.nextDouble() * 2 * PI
-            val speed = 2f + Random.Default.nextFloat() * 3f
-            val vx = (cos(angle) * speed).toFloat()
-            val vy = (sin(angle) * speed).toFloat()
-            val life = 0.8f + Random.Default.nextFloat() * 0.6f
-            sparkles.add(Sparkle(centerX, centerY, vx, vy, life))
-        }
-        startSparkleAnimation()
     }
 
     fun setQuizzes(quizzes: List<Quiz>) {
@@ -292,8 +154,7 @@ class PathMapView @JvmOverloads constructor(
         clipPath.moveTo(pointPositions[0].x, pointPositions[0].y)
         if (stop > 0) {
             val pos = FloatArray(2)
-            val tan = FloatArray(2)
-            measure.getPosTan(stop, pos, tan)
+            measure.getPosTan(stop, pos, null)
             clipPath.lineTo(pos[0], pos[1])
         } else {
             clipPath.lineTo(pointPositions[0].x, pointPositions[0].y)
@@ -327,7 +188,7 @@ class PathMapView @JvmOverloads constructor(
         glowAnimator = ValueAnimator.ofFloat(0f, 1f, 0f).apply {
             duration = 1500
             repeatCount = ValueAnimator.INFINITE
-            interpolator = LinearInterpolator()
+            interpolator = DecelerateInterpolator()
             addUpdateListener {
                 glowAlpha = it.animatedValue as Float
                 invalidate()
@@ -352,51 +213,16 @@ class PathMapView @JvmOverloads constructor(
         super.onDraw(canvas)
         if (quizzes.isEmpty() || pointPositions.size != quizzes.size) return
 
-        parchmentPaint.color = currentBgColor
-        canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), parchmentPaint)
-
-        val random = java.util.Random(System.currentTimeMillis())
-        for (i in 0 until 150) {
-            val x = random.nextInt(width)
-            val y = random.nextInt(height)
-            grainPaint.color = Color.argb(20 + random.nextInt(30), 80, 60, 30)
-            canvas.drawCircle(x.toFloat(), y.toFloat(), 1.5f, grainPaint)
-        }
+        canvas.drawColor(Color.parseColor("#F5E6D3"))
         drawDecorations(canvas)
-
         canvas.drawPath(fullPath, paintPathShadow)
         canvas.save()
         canvas.clipPath(clipPath)
         canvas.drawPath(fullPath, paintPath)
         canvas.restore()
-
         for ((index, pos) in pointPositions.withIndex()) {
             drawPoint(canvas, pos, quizzes[index], index)
             drawLabel(canvas, pos, quizzes[index])
-        }
-
-        for (feather in feathers) {
-            val alpha = (feather.alpha * 150).toInt()
-            val paintFeather = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                color = Color.argb(alpha, 180, 140, 100)
-                style = Paint.Style.FILL
-            }
-            val path = Path()
-            path.moveTo(feather.x, feather.y)
-            path.cubicTo(feather.x + 10f, feather.y - 8f, feather.x + 5f, feather.y - 12f, feather.x, feather.y - 10f)
-            path.lineTo(feather.x - 5f, feather.y - 5f)
-            canvas.drawPath(path, paintFeather)
-            canvas.drawCircle(feather.x, feather.y, 2f, paintFeather)
-        }
-
-        for (s in sparkles) {
-            val alpha = (s.life * 200).toInt().coerceIn(0, 255)
-            val paintSparkle = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                color = Color.argb(alpha, 255, 215, 0)
-                style = Paint.Style.FILL
-            }
-            val radius = 3f * s.life
-            canvas.drawCircle(s.x, s.y, radius, paintSparkle)
         }
 
         drawLamp(canvas)
@@ -437,23 +263,13 @@ class PathMapView @JvmOverloads constructor(
             val right = (lampX + size/2).toInt()
             val bottom = (lampY + size/2).toInt()
             it.setBounds(left, top, right, bottom)
-            it.alpha = (lampAlpha * 255).toInt()
             it.draw(canvas)
-        }
-        val paintRay = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = Color.argb(80, 255, 215, 0)
-            strokeWidth = 4f
-        }
-        for (i in 0..11) {
-            val angle = i * PI * 2 / 12
-            val dx = cos(angle).toFloat() * 70f
-            val dy = sin(angle).toFloat() * 70f
-            canvas.drawLine(lampX, lampY, lampX + dx, lampY + dy, paintRay)
         }
     }
 
     private fun drawPoint(canvas: Canvas, pos: PointF, quiz: Quiz, index: Int) {
         canvas.drawCircle(pos.x, pos.y + 4f, pointRadius + 2f, paintShadow)
+        canvas.drawCircle(pos.x, pos.y, pointRadius, paintPointBg)
 
         bookPointDrawable?.let {
             val size = pointRadius * 1.5f
@@ -468,19 +284,14 @@ class PathMapView @JvmOverloads constructor(
             paintText.textSize = pointRadius * 0.6f
 
             if (glowingPointIndex == index && !quiz.isCompleted) {
-                // Pulsing glow ring
                 paintGlow.alpha = (glowAlpha * 200).toInt()
                 canvas.drawCircle(pos.x, pos.y, pointRadius + 12f, paintGlow)
-
-                // Yellow number with shadow
                 paintText.setShadowLayer(12f, 0f, 0f, Color.rgb(255, 215, 0))
                 paintText.color = Color.rgb(255, 200, 50)
                 canvas.drawText(number, pos.x, pos.y + paintText.textSize / 3, paintText)
                 paintText.setShadowLayer(0f, 0f, 0f, 0)
                 paintText.color = Color.BLACK
             } else {
-                paintText.setShadowLayer(0f, 0f, 0f, 0)
-                paintText.color = Color.BLACK
                 canvas.drawText(number, pos.x, pos.y + paintText.textSize / 3, paintText)
             }
         } else {
@@ -524,7 +335,6 @@ class PathMapView @JvmOverloads constructor(
                 if (dx * dx + dy * dy < touchRadius * touchRadius) {
                     val quiz = quizzes[index]
                     if (quiz.isUnlocked) {
-                        addSparkles(pos.x, pos.y)
                         onQuizClickListener?.invoke(quiz)
                     } else {
                         Toast.makeText(context, "Сначала пройдите предыдущий тест", Toast.LENGTH_SHORT).show()
@@ -538,11 +348,7 @@ class PathMapView @JvmOverloads constructor(
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        glowAnimator?.cancel()
         pathAnimator?.cancel()
-        lampFlickerAnim.cancel()
-        featherAnimator?.cancel()
-        bgAnimator.cancel()
-        stopSparkleAnimation()
+        glowAnimator?.cancel()
     }
 }
