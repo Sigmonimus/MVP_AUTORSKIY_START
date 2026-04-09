@@ -1,31 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Основные цвета для тёмной темы -->
     <color name="white">#FFFFFFFF</color>
-
-    <!-- Текст -->
-    <color name="primary_text">#F5F2EB</color>        <!-- светлый бежевый для основного текста -->
-    <!-- светло-серый для второстепенного текста -->
-
-    <!-- Акцентные цвета -->
-    <color name="primary">#D9B48B</color>              <!-- более светлый золотистый для акцентов -->
-    <color name="primary_dark">#B37C15</color>         <!-- тёмный оттенок для акцентов -->
-    <color name="primary_light">#5E4B3A</color>        <!-- тёмно-бежевый для фона карточек -->
-
-    <!-- Цвета для кнопок -->
-    <!-- светлый золотистый для кнопок -->
-
-    <!-- Фоны -->
-    <color name="window_background">#1E1A16</color>    <!-- тёмно-коричневый фон -->
-    <!-- тёмный фон для карточек -->
-    <!-- золотистый для аватарок (можно оставить) -->
-
-    <!-- Специальные блоки -->
-    <!-- тёмный фон для цитат -->
-    <!-- тёмно-персиковый -->
-    <!-- тёмно-бежевый для выделения -->
-
-    <!-- Цвета для тестов -->
-    <color name="correct_green">#8BC34A</color>        <!-- светлый зелёный для правильного ответа -->
-    <color name="wrong_red">#FF8A65</color>            <!-- светлый красно-оранжевый для ошибки -->
+    <color name="primary_text">#F5F2EB</color>
+    <color name="primary">#D9B48B</color>
+    <color name="primary_dark">#B37C15</color>
+    <color name="primary_light">#5E4B3A</color>
+    <color name="window_background">#1E1A16</color>
+    <color name="correct_green">#8BC34A</color>
+    <color name="wrong_red">#FF8A65</color>
 </resources>
