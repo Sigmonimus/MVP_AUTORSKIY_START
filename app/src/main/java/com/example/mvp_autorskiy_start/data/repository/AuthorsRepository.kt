@@ -5,9 +5,11 @@ import com.example.mvp_autorskiy_start.R
 import com.example.mvp_autorskiy_start.data.models.Argument
 import com.example.mvp_autorskiy_start.data.models.Author
 import com.example.mvp_autorskiy_start.data.models.Work
+import com.example.mvp_autorskiy_start.utils.FB2Parser
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.InputStreamReader
+import com.example.mvp_autorskiy_start.data.repository.WordRepository
 
 object AuthorsRepository {
 
@@ -25,6 +27,23 @@ object AuthorsRepository {
 
         cachedAuthors = authorsJson.map { it.toAuthor() }
         return cachedAuthors!!
+    }
+
+    fun loadFullText(context: Context, workId: Int): String {
+        return try {
+            val fileName = "works/$workId.fb2"
+            val inputStream = context.assets.open(fileName)
+            val fb2Content = inputStream.bufferedReader().use { it.readText() }
+            var html = FB2Parser.parseToHtml(fb2Content)
+            val words = WordRepository.getWords().map { it.word }.distinct()
+            for (word in words) {
+                val regex = Regex("""(?<=[^>]|^)($word)(?=[^<]|$)""", RegexOption.IGNORE_CASE)
+                html = regex.replace(html) { "<span class='highlight'>${it.value}</span>" }
+            }
+            html
+        } catch (e: Exception) {
+            "<p>Полный текст не найден. Файл: works/$workId.fb2</p>"
+        }
     }
 
     private data class AuthorJson(
@@ -58,10 +77,7 @@ object AuthorsRepository {
             summary = summary,
             fullText = fullText,
             arguments = arguments.map {
-                it.toArgument(
-                    authorName,
-                    title
-                )
+                it.toArgument(authorName, title)
             }
         )
     }
@@ -80,13 +96,5 @@ object AuthorsRepository {
             fullText = "",
             categoryIds = emptyList()
         )
-    }
-    fun loadFullText(context: Context, workId: Int): String {
-        return try {
-            val fileName = "work_$workId.txt"
-            context.assets.open(fileName).bufferedReader().use { it.readText() }
-        } catch (e: Exception) {
-            "Полный текст не найден."
-        }
     }
 }

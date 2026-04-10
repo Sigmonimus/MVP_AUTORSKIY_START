@@ -21,6 +21,7 @@ import com.example.mvp_autorskiy_start.utils.MusicPlayerManager
 import com.example.mvp_autorskiy_start.utils.SoundPlayer
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
+import com.example.mvp_autorskiy_start.ui.vocabulary.VocabularyFragment
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
