@@ -5,8 +5,8 @@ import android.animation.ValueAnimator
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.viewModels
 import com.example.mvp_autorskiy_start.R
 import com.example.mvp_autorskiy_start.data.models.Question
 import com.example.mvp_autorskiy_start.data.repository.QuizRepository
@@ -17,24 +17,28 @@ import com.google.android.material.card.MaterialCardView
 
 class TestFragment : BaseFragment<FragmentTestBinding>(FragmentTestBinding::inflate) {
 
-    private lateinit var questions: List<Question>
+    private val viewModel: TestViewModel by viewModels()
     private var currentIndex = 0
     private var score = 0
     private var selectedOptionIndex = -1
     private var quizId: Int = -1
+    private var totalQuestions: Int = 0
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        questions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        val questions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             arguments?.getParcelableArrayList("questions", Question::class.java) ?: emptyList()
         } else {
             @Suppress("DEPRECATION")
-            arguments?.getParcelableArrayList<Question>("questions") ?: emptyList()
+            arguments?.getParcelableArrayList("questions") ?: emptyList()
         }
         quizId = arguments?.getInt("quizId", -1) ?: -1
 
         if (questions.isEmpty()) return
+
+        val shuffled = viewModel.initShuffledQuestions(questions)
+        totalQuestions = shuffled.size
 
         displayQuestion()
 
@@ -43,18 +47,18 @@ class TestFragment : BaseFragment<FragmentTestBinding>(FragmentTestBinding::infl
     }
 
     private fun displayQuestion() {
-        val question = questions[currentIndex]
-        binding.tvQuestionNumber.text = "Вопрос ${currentIndex + 1}/${questions.size}"
-        binding.progressBar.max = questions.size
+        val question = viewModel.shuffledQuestions[currentIndex]
+        binding.tvQuestionNumber.text = "Вопрос ${currentIndex + 1}/$totalQuestions"
+        binding.progressBar.max = totalQuestions
         binding.progressBar.progress = currentIndex + 1
-        binding.tvQuestionText.text = question.text
+        binding.tvQuestionText.text = question.originalQuestion.text
 
         binding.optionsContainer.removeAllViews()
         val letters = arrayOf("А", "Б", "В", "Г")
-        question.options.forEachIndexed { index, option ->
+        question.shuffledOptions.forEachIndexed { index, option ->
             val card = layoutInflater.inflate(R.layout.item_option, binding.optionsContainer, false) as MaterialCardView
-            val tvLetter = card.findViewById<TextView>(R.id.tvOptionLetter)
-            val tvText = card.findViewById<TextView>(R.id.tvOptionText)
+            val tvLetter = card.findViewById<android.widget.TextView>(R.id.tvOptionLetter)
+            val tvText = card.findViewById<android.widget.TextView>(R.id.tvOptionText)
             tvLetter.text = letters[index]
             tvText.text = option
             card.tag = index
@@ -68,7 +72,6 @@ class TestFragment : BaseFragment<FragmentTestBinding>(FragmentTestBinding::infl
             card.isClickable = true
             card.alpha = 1f
         }
-
         selectedOptionIndex = -1
         binding.btnCheck.isEnabled = true
         binding.btnNext.isEnabled = false
@@ -99,8 +102,7 @@ class TestFragment : BaseFragment<FragmentTestBinding>(FragmentTestBinding::infl
 
     private fun checkAnswer() {
         if (selectedOptionIndex == -1) return
-
-        val question = questions[currentIndex]
+        val question = viewModel.shuffledQuestions[currentIndex]
         val isCorrect = selectedOptionIndex == question.correctAnswerIndex
 
         for (i in 0 until binding.optionsContainer.childCount) {
@@ -128,13 +130,12 @@ class TestFragment : BaseFragment<FragmentTestBinding>(FragmentTestBinding::infl
             card.isClickable = false
             card.alpha = 0.6f
         }
-
         binding.btnCheck.isEnabled = false
         binding.btnNext.isEnabled = true
     }
 
     private fun nextQuestion() {
-        if (currentIndex < questions.size - 1) {
+        if (currentIndex < totalQuestions - 1) {
             currentIndex++
             displayQuestion()
         } else {
@@ -144,9 +145,9 @@ class TestFragment : BaseFragment<FragmentTestBinding>(FragmentTestBinding::infl
 
     private fun showResult() {
         if (quizId != -1) {
-            QuizRepository.updateQuizProgress(quizId, score, questions.size)
+            QuizRepository.updateQuizProgress(quizId, score, totalQuestions)
         }
-        val resultFragment = TestResultFragment.newInstance(score, questions.size, quizId)
+        val resultFragment = TestResultFragment.newInstance(score, totalQuestions, quizId)
         parentFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainer, resultFragment)
             .commit()
