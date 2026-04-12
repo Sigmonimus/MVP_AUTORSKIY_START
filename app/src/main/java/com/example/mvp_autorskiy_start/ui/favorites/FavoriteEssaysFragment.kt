@@ -3,6 +3,7 @@ package com.example.mvp_autorskiy_start.ui.favorites
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import android.app.AlertDialog
 import com.example.mvp_autorskiy_start.R
@@ -10,6 +11,7 @@ import com.example.mvp_autorskiy_start.data.repository.FavoritesRepository
 import com.example.mvp_autorskiy_start.databinding.FragmentFavoriteEssaysBinding
 import com.example.mvp_autorskiy_start.data.models.SavedEssay
 import com.example.mvp_autorskiy_start.ui.common.BaseFragment
+import kotlinx.coroutines.launch
 
 class FavoriteEssaysFragment : BaseFragment<FragmentFavoriteEssaysBinding>(FragmentFavoriteEssaysBinding::inflate) {
 
@@ -24,23 +26,23 @@ class FavoriteEssaysFragment : BaseFragment<FragmentFavoriteEssaysBinding>(Fragm
     }
 
     private fun loadEssays() {
-        val essays = FavoritesRepository.getSavedEssays()
-        if (essays.isEmpty()) {
-            binding.tvEmpty.visibility = View.VISIBLE
-            binding.rvEssays.visibility = View.GONE
-            binding.tvCount.text = getString(R.string.essays_count, 0)
-        } else {
-            binding.tvEmpty.visibility = View.GONE
-            binding.rvEssays.visibility = View.VISIBLE
-            binding.tvCount.text = getString(R.string.essays_count, essays.size)
-
-            binding.rvEssays.layoutManager = LinearLayoutManager(requireContext())
-            val adapter = FavoriteEssaysAdapter(
-                essays = essays,
-                onItemClick = { essay -> showEssayDialog(essay) },
-                onDeleteClick = { essay -> deleteEssay(essay) }
-            )
-            binding.rvEssays.adapter = adapter
+        lifecycleScope.launch {
+            val essays = FavoritesRepository.getFavoriteEssays()
+            if (essays.isEmpty()) {
+                binding.tvEmpty.visibility = View.VISIBLE
+                binding.rvEssays.visibility = View.GONE
+                binding.tvCount.text = getString(R.string.essays_count, 0)
+            } else {
+                binding.tvEmpty.visibility = View.GONE
+                binding.rvEssays.visibility = View.VISIBLE
+                binding.tvCount.text = getString(R.string.essays_count, essays.size)
+                binding.rvEssays.layoutManager = LinearLayoutManager(requireContext())
+                val adapter = FavoriteEssaysAdapter(essays,
+                    onItemClick = { essay -> showEssayDialog(essay) },
+                    onDeleteClick = { essay -> deleteEssay(essay) }
+                )
+                binding.rvEssays.adapter = adapter
+            }
         }
     }
 
@@ -49,9 +51,11 @@ class FavoriteEssaysFragment : BaseFragment<FragmentFavoriteEssaysBinding>(Fragm
             .setTitle("Удалить сочинение")
             .setMessage("Вы уверены, что хотите удалить «${essay.title}» из избранного?")
             .setPositiveButton("Удалить") { _, _ ->
-                FavoritesRepository.removeSavedEssay(essay.id)
-                loadEssays()
-                Toast.makeText(requireContext(), "Сочинение удалено", Toast.LENGTH_SHORT).show()
+                lifecycleScope.launch {
+                    FavoritesRepository.removeEssay(essay.toJson())
+                    loadEssays()
+                    Toast.makeText(requireContext(), "Сочинение удалено", Toast.LENGTH_SHORT).show()
+                }
             }
             .setNegativeButton("Отмена", null)
             .show()
@@ -59,7 +63,7 @@ class FavoriteEssaysFragment : BaseFragment<FragmentFavoriteEssaysBinding>(Fragm
 
     private fun showEssayDialog(essay: SavedEssay) {
         val message = """
-        Тема: ${essay.theme}
+        Тема: ${essay.title}
         
         Текст:
         ${essay.content}

@@ -2,6 +2,7 @@ package com.example.mvp_autorskiy_start.ui.arguments
 
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mvp_autorskiy_start.databinding.FragmentArgumentsLibraryBinding
 import com.example.mvp_autorskiy_start.data.models.Argument
@@ -10,6 +11,7 @@ import com.example.mvp_autorskiy_start.data.models.Category
 import com.example.mvp_autorskiy_start.data.repository.FavoritesRepository
 import com.example.mvp_autorskiy_start.ui.common.BaseFragment
 import com.google.android.material.chip.Chip
+import kotlinx.coroutines.launch
 
 class ArgumentsLibraryFragment : BaseFragment<FragmentArgumentsLibraryBinding>(FragmentArgumentsLibraryBinding::inflate) {
 
@@ -20,7 +22,6 @@ class ArgumentsLibraryFragment : BaseFragment<FragmentArgumentsLibraryBinding>(F
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         loadData()
         setupSearch()
         setupChips()
@@ -40,7 +41,6 @@ class ArgumentsLibraryFragment : BaseFragment<FragmentArgumentsLibraryBinding>(F
                 updateArgumentsList()
                 return true
             }
-
             override fun onQueryTextChange(newText: String?): Boolean {
                 currentQuery = newText?.trim() ?: ""
                 updateArgumentsList()
@@ -63,7 +63,6 @@ class ArgumentsLibraryFragment : BaseFragment<FragmentArgumentsLibraryBinding>(F
             }
         }
         binding.chipGroup.addView(allChip)
-
         allCategories.forEach { category ->
             val chip = Chip(requireContext()).apply {
                 text = category.name
@@ -85,35 +84,36 @@ class ArgumentsLibraryFragment : BaseFragment<FragmentArgumentsLibraryBinding>(F
     }
 
     private fun updateArgumentsList() {
-        var filtered = allArguments
-
-        if (currentCategoryId != -1) {
-            filtered = filtered.filter { it.categoryIds.contains(currentCategoryId) }
-        }
-
-        if (currentQuery.isNotEmpty()) {
-            filtered = filtered.filter {
-                it.title.contains(currentQuery, ignoreCase = true) ||
-                        it.author.contains(currentQuery, ignoreCase = true) ||
-                        it.workTitle.contains(currentQuery, ignoreCase = true)
+        lifecycleScope.launch {
+            var filtered = allArguments
+            if (currentCategoryId != -1) {
+                filtered = filtered.filter { it.categoryIds.contains(currentCategoryId) }
             }
-        }
-
-        val favoriteIds = FavoritesRepository.getFavoriteArguments()
-        val adapter = ArgumentsAdapter(
-            arguments = filtered,
-            favoriteIds = favoriteIds,
-            onItemClick = { argument -> showArgumentDialog(argument) },
-            onFavoriteClick = { argument, isFavorite ->
-                if (isFavorite) {
-                    FavoritesRepository.addFavoriteArgument(argument.id)
-                } else {
-                    FavoritesRepository.removeFavoriteArgument(argument.id)
+            if (currentQuery.isNotEmpty()) {
+                filtered = filtered.filter {
+                    it.title.contains(currentQuery, ignoreCase = true) ||
+                            it.author.contains(currentQuery, ignoreCase = true) ||
+                            it.workTitle.contains(currentQuery, ignoreCase = true)
                 }
-                updateArgumentsList()
             }
-        )
-        binding.rvArguments.adapter = adapter
+            val favoriteIds = FavoritesRepository.getFavoriteArguments()
+            val adapter = ArgumentsAdapter(
+                arguments = filtered,
+                favoriteIds = favoriteIds,
+                onItemClick = { argument -> showArgumentDialog(argument) },
+                onFavoriteClick = { argument, isFavorite ->
+                    lifecycleScope.launch {
+                        if (isFavorite) {
+                            FavoritesRepository.addFavoriteArgument(argument.id)
+                        } else {
+                            FavoritesRepository.removeFavoriteArgument(argument.id)
+                        }
+                        updateArgumentsList()
+                    }
+                }
+            )
+            binding.rvArguments.adapter = adapter
+        }
     }
 
     private fun showArgumentDialog(argument: Argument) {

@@ -1,14 +1,16 @@
 package com.example.mvp_autorskiy_start.data.models
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
-
-@Parcelize
 data class SavedEssay(
-    val id: String,
     val title: String,
     val content: String,
-    val author: String,
-    val theme: String,
-    val date: Long
-) : Parcelable
+    val date: String
+) {
+    fun toJson(): String = "$title|$content|$date"
+
+    companion object {
+        fun fromJson(json: String): SavedEssay? {
+            val parts = json.split("|")
+            return if (parts.size == 3) SavedEssay(parts[0], parts[1], parts[2]) else null
+        }
+    }
+}

@@ -1,194 +1,117 @@
 package com.example.mvp_autorskiy_start.ui.profile
 
-import android.R
 import android.app.AlertDialog
-import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
-import com.example.mvp_autorskiy_start.data.models.PracticeDraft
+import com.bumptech.glide.load.resource.bitmap.CircleCrop
+import com.example.mvp_autorskiy_start.App
+import com.example.mvp_autorskiy_start.R
 import com.example.mvp_autorskiy_start.databinding.FragmentProfileBinding
 import com.example.mvp_autorskiy_start.ui.common.BaseFragment
 import com.example.mvp_autorskiy_start.utils.MusicPlayerManager
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import com.example.mvp_autorskiy_start.data.repository.ResourceMapper
+import kotlinx.coroutines.launch
 
 class ProfileFragment : BaseFragment<FragmentProfileBinding>(FragmentProfileBinding::inflate) {
 
-    private val prefs by lazy { requireContext().getSharedPreferences("profile_prefs", Context.MODE_PRIVATE) }
-    private val gson = Gson()
+    private var currentUserName: String = ""
+    private var currentUserEmail: String = ""
 
-    private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+    private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
-            saveAvatarUri(it)
-            loadAvatarFromUri(it)
-        } ?: run {
-            Toast.makeText(requireContext(), "Изображение не выбрано", Toast.LENGTH_SHORT).show()
+            lifecycleScope.launch {
+                App.dataStoreManager.setAvatarUri(it.toString())
+                App.dataStoreManager.setAvatarResName("")
+                loadAvatar()
+            }
+            requireContext().contentResolver.takePersistableUriPermission(it, Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val switchMusic = binding.switchMusic
-        var isSwitchInitialized = false
-        switchMusic.isChecked = MusicPlayerManager.isEnabled()
-        switchMusic.setOnCheckedChangeListener { _, isChecked ->
-            if (isSwitchInitialized) {
-                MusicPlayerManager.setEnabled(isChecked)
-            } else {
-                isSwitchInitialized = true
+        loadProfileData()
+        setupListeners()
+    }
+
+    private fun loadProfileData() {
+        lifecycleScope.launch {
+            val prefs = App.dataStoreManager
+            currentUserName = prefs.getUserName()
+            currentUserEmail = prefs.getUserEmail()
+            binding.etName.setText(currentUserName)
+            binding.etEmail.setText(currentUserEmail)
+            binding.switchNotifications.isChecked = prefs.isNotificationsEnabled()
+            binding.switchMusic.isChecked = prefs.isMusicEnabled()
+
+            // Используем массив из ресурсов
+            val trackNames = resources.getStringArray(R.array.music_track_names)
+            val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, trackNames)
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            binding.spinnerMusicTrack.adapter = adapter
+            val currentTrack = prefs.getMusicTrack()
+            binding.spinnerMusicTrack.setSelection(currentTrack)
+
+            updateStatistics()
+            loadAvatar()
+        }
+    }
+
+    private fun setupListeners() {
+        binding.btnEditName.setOnClickListener { showEditNameDialog() }
+        binding.btnEditEmail.setOnClickListener { showEditEmailDialog() }
+        binding.ivAvatar.setOnClickListener { showAvatarDialog() }
+
+        binding.switchNotifications.setOnCheckedChangeListener { _, isChecked ->
+            lifecycleScope.launch { App.dataStoreManager.setNotificationsEnabled(isChecked) }
+        }
+
+        binding.switchMusic.setOnCheckedChangeListener { _, isChecked ->
+            lifecycleScope.launch {
+                App.dataStoreManager.setMusicEnabled(isChecked)
+                if (isChecked) {
+                    val trackResId = getTrackResId(App.dataStoreManager.getMusicTrack())
+                    MusicPlayerManager.start(requireContext(), trackResId)
+                } else {
+                    MusicPlayerManager.pause()
+                }
             }
         }
 
-        val trackNames = MusicPlayerManager.getTracks().map { it.name }
-        if (trackNames.isNotEmpty()) {
-            val trackAdapter = ArrayAdapter(requireContext(), R.layout.simple_spinner_item, trackNames)
-            trackAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
-            binding.spinnerTrack.adapter = trackAdapter
-            binding.spinnerTrack.setSelection(MusicPlayerManager.getCurrentTrackIndex())
-
-            var isSpinnerInitialized = false
-            binding.spinnerTrack.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    if (isSpinnerInitialized) {
-                        MusicPlayerManager.setTrack(position)
-                    } else {
-                        isSpinnerInitialized = true
+        binding.spinnerMusicTrack.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: View?, position: Int, id: Long) {
+                lifecycleScope.launch {
+                    App.dataStoreManager.setMusicTrack(position)
+                    if (App.dataStoreManager.isMusicEnabled()) {
+                        MusicPlayerManager.start(requireContext(), getTrackResId(position))
                     }
                 }
-                override fun onNothingSelected(parent: AdapterView<*>?) {}
             }
-
-            MusicPlayerManager.setOnTrackChanged { index, _ ->
-                binding.spinnerTrack.setSelection(index)
-            }
-        } else {
-            binding.spinnerTrack.visibility = View.GONE
-        }
-
-        loadUserInfo()
-        loadAvatar()
-        loadStatistics()
-        loadSettings()
-
-        binding.tvUserName.setOnClickListener {
-            showEditNameDialog()
-        }
-
-        binding.llEmail.setOnClickListener { showEditEmailDialog() }
-
-        binding.ivAvatar.setOnClickListener {
-            pickImageLauncher.launch("image/*")
-        }
-
-        binding.llLanguage.setOnClickListener { showLanguageDialog() }
-        binding.switchNotifications.setOnCheckedChangeListener { _, isChecked ->
-            prefs.edit().putBoolean("notifications_enabled", isChecked).apply()
-        }
-        binding.btnClearDrafts.setOnClickListener { showClearDraftsConfirmation() }
-    }
-
-    private fun loadUserInfo() {
-        val userName = prefs.getString("user_name", "Александр Сергеевич")
-        binding.tvUserName.text = userName
-        val email = prefs.getString("user_email", "pushkin@example.com")
-        binding.tvEmail.text = email
-    }
-
-    private fun loadAvatar() {
-        val avatarUriString = prefs.getString("avatar_uri", null)
-        if (!avatarUriString.isNullOrEmpty()) {
-            try {
-                val uri = Uri.parse(avatarUriString)
-                loadAvatarFromUri(uri)
-                return
-            } catch (e: Exception) {
-                prefs.edit().remove("avatar_uri").apply()
-            }
-        }
-
-        val avatar = prefs.getString("avatar", "pushkin")
-        setAvatarImage(avatar ?: "pushkin")
-    }
-
-    private fun loadAvatarFromUri(uri: Uri) {
-        Glide.with(this)
-            .load(uri)
-            .circleCrop()
-            .placeholder(com.example.mvp_autorskiy_start.R.drawable.outline_account_circle_24)
-            .into(binding.ivAvatar)
-    }
-
-    private fun saveAvatarUri(uri: Uri) {
-        val uriString = uri.toString()
-        prefs.edit().putString("avatar_uri", uriString).apply()
-        prefs.edit().remove("avatar").apply()
-    }
-
-    private fun setAvatarImage(avatarName: String) {
-        val resId = when (avatarName) {
-            "pushkin" -> com.example.mvp_autorskiy_start.R.drawable.ic_pushkin
-            "tolstoy" -> com.example.mvp_autorskiy_start.R.drawable.ic_tolstoy
-            "dostoevsky" -> com.example.mvp_autorskiy_start.R.drawable.ic_dostoevsky
-            "chekhov" -> com.example.mvp_autorskiy_start.R.drawable.ic_chekhov
-            else -> com.example.mvp_autorskiy_start.R.drawable.outline_account_circle_24
-        }
-        binding.ivAvatar.setImageResource(resId)
-    }
-
-    private fun loadStatistics() {
-        val drafts = getDraftsFromPrefs()
-        binding.tvDraftsCount.text = drafts.size.toString()
-        val totalWords = drafts.sumOf { draft ->
-            draft.content.split(Regex("\\s+")).count { it.isNotEmpty() }
-        }
-        binding.tvTotalWords.text = totalWords.toString()
-    }
-
-    private fun loadSettings() {
-        val notifications = prefs.getBoolean("notifications_enabled", true)
-        binding.switchNotifications.isChecked = notifications
-    }
-
-    private fun getDraftsFromPrefs(): List<PracticeDraft> {
-        val prefsPractice = requireContext().getSharedPreferences("practice_prefs", Context.MODE_PRIVATE)
-        val json = prefsPractice.getString("drafts", null)
-        return if (json != null) {
-            val trimmed = json.trim()
-            if (trimmed.startsWith("[")) {
-                val listType = object : TypeToken<MutableList<PracticeDraft>>() {}.type
-                gson.fromJson(json, listType) ?: emptyList()
-            } else {
-                val mapType = object : TypeToken<MutableMap<String, PracticeDraft>>() {}.type
-                val map: MutableMap<String, PracticeDraft> = gson.fromJson(json, mapType) ?: mutableMapOf()
-                map.values.toList()
-            }
-        } else {
-            emptyList()
+            override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {}
         }
     }
 
     private fun showEditNameDialog() {
-        val dialogView = layoutInflater.inflate(com.example.mvp_autorskiy_start.R.layout.dialog_edit_name, null)
-        val editText = dialogView.findViewById<EditText>(com.example.mvp_autorskiy_start.R.id.etName)
-        editText.setText(prefs.getString("user_name", ""))
-
+        val editText = EditText(requireContext())
+        editText.setText(currentUserName)
         AlertDialog.Builder(requireContext())
-            .setTitle("Редактировать имя")
-            .setView(dialogView)
+            .setTitle("Введите имя")
+            .setView(editText)
             .setPositiveButton("Сохранить") { _, _ ->
                 val newName = editText.text.toString().trim()
-                if (newName.isNotEmpty()) {
-                    prefs.edit().putString("user_name", newName).apply()
-                    binding.tvUserName.text = newName
-                    Toast.makeText(requireContext(), "Имя сохранено", Toast.LENGTH_SHORT).show()
+                lifecycleScope.launch {
+                    App.dataStoreManager.setUserName(newName)
+                    currentUserName = newName
+                    binding.etName.setText(newName)
                 }
             }
             .setNegativeButton("Отмена", null)
@@ -196,45 +119,75 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(FragmentProfileBind
     }
 
     private fun showEditEmailDialog() {
-        val dialogView = layoutInflater.inflate(com.example.mvp_autorskiy_start.R.layout.dialog_edit_email, null)
-        val editText = dialogView.findViewById<EditText>(com.example.mvp_autorskiy_start.R.id.etEmail)
-        editText.setText(prefs.getString("user_email", ""))
-
+        val editText = EditText(requireContext())
+        editText.setText(currentUserEmail)
         AlertDialog.Builder(requireContext())
-            .setTitle("Редактировать email")
-            .setView(dialogView)
+            .setTitle("Введите email")
+            .setView(editText)
             .setPositiveButton("Сохранить") { _, _ ->
                 val newEmail = editText.text.toString().trim()
-                if (newEmail.isNotEmpty() && newEmail.contains("@") && newEmail.contains(".")) {
-                    prefs.edit().putString("user_email", newEmail).apply()
-                    binding.tvEmail.text = newEmail
-                    Toast.makeText(requireContext(), "Email сохранён", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(requireContext(), "Введите корректный email", Toast.LENGTH_SHORT).show()
+                lifecycleScope.launch {
+                    App.dataStoreManager.setUserEmail(newEmail)
+                    currentUserEmail = newEmail
+                    binding.etEmail.setText(newEmail)
                 }
             }
             .setNegativeButton("Отмена", null)
             .show()
     }
 
-    private fun showLanguageDialog() {
+    private fun showAvatarDialog() {
+        val avatars = arrayOf("Пушкин", "Толстой", "Достоевский", "Чехов", "Выбрать из галереи")
         AlertDialog.Builder(requireContext())
-            .setTitle("Выберите язык")
-            .setItems(arrayOf("Русский")) { _, _ -> }
+            .setTitle("Выберите аватар")
+            .setItems(avatars) { _, which ->
+                when (which) {
+                    0 -> setPresetAvatar("pushkin_portrait")
+                    1 -> setPresetAvatar("tolstoy_portrait")
+                    2 -> setPresetAvatar("dostoevsky_portrait")
+                    3 -> setPresetAvatar("chekhov_portrait")
+                    4 -> pickImageLauncher.launch("image/*")
+                }
+            }
             .show()
     }
 
-    private fun showClearDraftsConfirmation() {
-        AlertDialog.Builder(requireContext())
-            .setTitle("Очистить все черновики")
-            .setMessage("Вы уверены? Все сохранённые работы будут удалены без возможности восстановления.")
-            .setPositiveButton("Удалить") { _, _ ->
-                val prefsPractice = requireContext().getSharedPreferences("practice_prefs", Context.MODE_PRIVATE)
-                prefsPractice.edit().remove("drafts").apply()
-                loadStatistics()
-                Toast.makeText(requireContext(), "Все черновики удалены", Toast.LENGTH_SHORT).show()
-            }
-            .setNegativeButton("Отмена", null)
-            .show()
+    private fun setPresetAvatar(resName: String) {
+        lifecycleScope.launch {
+            App.dataStoreManager.setAvatarResName(resName)
+            App.dataStoreManager.setAvatarUri("")
+            loadAvatar()
+        }
+    }
+
+    private suspend fun loadAvatar() {
+        val prefs = App.dataStoreManager
+        val uriString = prefs.getAvatarUri()
+        val resName = prefs.getAvatarResName()
+
+        if (uriString.isNotEmpty()) {
+            Glide.with(this@ProfileFragment)
+                .load(Uri.parse(uriString))
+                .transform(CircleCrop())
+                .into(binding.ivAvatar)
+        } else {
+            val resId = ResourceMapper.getDrawableResId(resName)
+            Glide.with(this@ProfileFragment)
+                .load(resId)
+                .transform(CircleCrop())
+                .into(binding.ivAvatar)
+        }
+    }
+
+    private suspend fun updateStatistics() {
+        val draftsCount = App.dataStoreManager.getTotalDraftsCount()
+        val wordsCount = App.dataStoreManager.getTotalWordsCount()
+        binding.tvStats.text = "Черновиков: $draftsCount\nВсего слов: $wordsCount"
+    }
+
+    private fun getTrackResId(position: Int): Int = when (position) {
+        0 -> R.raw.lofiroomcafe_blooming_serenity_lofi_chill_beat_352429
+        1 -> R.raw.paulyudin_inspiring_485937
+        else -> R.raw.purrplecat_after_the_rain_360275
     }
 }

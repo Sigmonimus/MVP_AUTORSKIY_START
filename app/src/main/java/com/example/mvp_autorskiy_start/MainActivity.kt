@@ -18,10 +18,10 @@ import com.example.mvp_autorskiy_start.ui.practice.PracticeFragment
 import com.example.mvp_autorskiy_start.ui.profile.ProfileFragment
 import com.example.mvp_autorskiy_start.ui.theory.TheoryFragment
 import com.example.mvp_autorskiy_start.utils.MusicPlayerManager
+import com.example.mvp_autorskiy_start.data.repository.ResourceMapper
 import com.example.mvp_autorskiy_start.utils.SoundPlayer
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
-import com.example.mvp_autorskiy_start.ui.vocabulary.VocabularyFragment
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -33,6 +33,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         QuizRepository.init(this)
+        FavoritesRepository.init(this)
         MusicPlayerManager.init(this)
 
         drawerLayout = findViewById(R.id.drawerLayout)
@@ -46,7 +47,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
         navigationView.setNavigationItemSelectedListener(this)
-        FavoritesRepository.init(this)
 
         if (savedInstanceState == null) {
             loadFragment(HomeFragment())
@@ -86,7 +86,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onResume() {
         super.onResume()
-        MusicPlayerManager.start()
+        // Здесь можно запустить музыку, если нужно
+        // MusicPlayerManager.start(this, R.raw.some_track)
     }
 
     override fun onPause() {
@@ -96,9 +97,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onDestroy() {
         super.onDestroy()
-        MusicPlayerManager.release()
+        MusicPlayerManager.stop()
         SoundPlayer.release()
     }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {

@@ -2,9 +2,15 @@ package com.example.mvp_autorskiy_start.utils
 
 import android.util.Xml
 import org.xmlpull.v1.XmlPullParser
+import java.io.InputStream
 import java.io.StringReader
 
 object FB2Parser {
+
+    fun parseToHtml(inputStream: InputStream): String {
+        val fb2Content = inputStream.bufferedReader().use { it.readText() }
+        return parseToHtml(fb2Content)
+    }
 
     fun parseToHtml(fb2Content: String): String {
         val parser = Xml.newPullParser()
@@ -63,79 +69,92 @@ object FB2Parser {
 
         val htmlContent = htmlBody.toString()
         return """
-        <html>
-        <head>
-            <meta charset="UTF-8">
-            <style>
-                body {
-                    font-size: 40px !important;
-                    line-height: 1.6;
-                    padding: 16px;
-                }
-                h3 {
-                    font-size: 1.5em;
-                    margin-top: 1.2em;
-                    margin-bottom: 0.5em;
-                }
-                p {
-                    margin-bottom: 0.8em;
-                }
-                pre {
-                    background-color: #E8DFD1;
-                    padding: 12px;
-                    border-radius: 8px;
-                    font-family: monospace;
-                    white-space: pre-wrap;
-                }
-                .verse {
-                    display: block;
-                    margin-left: 1em;
-                }
-                .stanza {
-                    margin-bottom: 0.8em;
-                }
-                .subtitle {
-                    font-style: italic;
-                    margin-bottom: 0.5em;
-                }
-                .cite {
-                    font-style: italic;
-                    margin-left: 1em;
-                }
-                .epigraph {
-                    margin-left: 2em;
-                    margin-bottom: 1em;
-                    font-style: italic;
-                }
-                .annotation {
-                    margin: 1em 0;
-                    padding: 0.5em;
-                    background-color: #E8DFD1;
-                    border-radius: 8px;
-                }
-                @media (prefers-color-scheme: dark) {
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <style>
                     body {
-                        background-color: #1E1A16;
-                        color: #F5F2EB;
+                        font-family: sans-serif;
+                        font-size: 24px;
+                        line-height: 1.6;
+                        padding: 16px;
+                        margin: 0;
+                        background-color: #F5F2EB;
+                        color: #4A2E1A;
                     }
-                    .annotation {
-                        background-color: #2D2924;
+                    h3 {
+                        font-size: 1.5em;
+                        margin-top: 1.2em;
+                        margin-bottom: 0.5em;
+                    }
+                    p {
+                        margin-bottom: 0.8em;
                     }
                     pre {
-                        background-color: #2D2924;
+                        background-color: #E8DFD1;
+                        padding: 12px;
+                        border-radius: 8px;
+                        font-family: monospace;
+                        white-space: pre-wrap;
+                    }
+                    .verse {
+                        display: block;
+                        margin-left: 1em;
+                    }
+                    .stanza {
+                        margin-bottom: 0.8em;
+                    }
+                    .subtitle {
+                        font-style: italic;
+                        margin-bottom: 0.5em;
+                    }
+                    .cite {
+                        font-style: italic;
+                        margin-left: 1em;
+                    }
+                    .epigraph {
+                        margin-left: 2em;
+                        margin-bottom: 1em;
+                        font-style: italic;
+                    }
+                    .annotation {
+                        margin: 1em 0;
+                        padding: 0.5em;
+                        background-color: #E8DFD1;
+                        border-radius: 8px;
                     }
                     .highlight {
                         background-color: #FFEB3B !important;
                         border-radius: 4px;
                         padding: 0 2px;
                     }
-                }
-            </style>
-        </head>
-        <body>
-            $htmlContent
-        </body>
-        </html>
-    """.trimIndent()
+                    @media (prefers-color-scheme: dark) {
+                        body {
+                            background-color: #1E1A16;
+                            color: #F5F2EB;
+                        }
+                        .annotation {
+                            background-color: #2D2924;
+                        }
+                        pre {
+                            background-color: #2D2924;
+                        }
+                    }
+                </style>
+            </head>
+            <body>
+                $htmlContent
+            </body>
+            </html>
+        """.trimIndent()
+    }
+
+    fun highlightWords(html: String, words: Set<String>): String {
+        var result = html
+        for (word in words) {
+            val regex = Regex("""(?<=[^>]|^)($word)(?=[^<]|$)""", RegexOption.IGNORE_CASE)
+            result = regex.replace(result) { "<span class='highlight'>${it.value}</span>" }
+        }
+        return result
     }
 }

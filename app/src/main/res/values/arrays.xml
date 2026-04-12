@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="music_track_names">
+        <item>Lo-Fi Chill Beat</item>
+        <item>Inspiring</item>
+        <item>After the Rain</item>
+    </string-array>
+</resources>

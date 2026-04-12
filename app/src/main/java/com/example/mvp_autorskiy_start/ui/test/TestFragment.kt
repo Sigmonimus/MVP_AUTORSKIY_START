@@ -145,7 +145,7 @@ class TestFragment : BaseFragment<FragmentTestBinding>(FragmentTestBinding::infl
 
     private fun showResult() {
         if (quizId != -1) {
-            QuizRepository.updateQuizProgress(quizId, score, totalQuestions)
+            QuizRepository.saveQuizResult(requireContext(), quizId, score, totalQuestions)
         }
         val resultFragment = TestResultFragment.newInstance(score, totalQuestions, quizId)
         parentFragmentManager.beginTransaction()
