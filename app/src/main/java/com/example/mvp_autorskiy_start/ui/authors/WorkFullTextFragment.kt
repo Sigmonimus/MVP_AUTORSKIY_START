@@ -18,6 +18,8 @@ class WorkFullTextFragment : BaseFragment<FragmentWorkFullTextBinding>(FragmentW
         workId = arguments?.getInt("work_id") ?: -1
         if (workId == -1) return
 
+        binding.progressBar.visibility = View.VISIBLE
+        binding.webView.visibility = View.GONE
         loadFullText()
     }
 
@@ -25,6 +27,8 @@ class WorkFullTextFragment : BaseFragment<FragmentWorkFullTextBinding>(FragmentW
         lifecycleScope.launch {
             val html = AuthorsRepository.loadFullText(requireContext(), workId)
             binding.webView.loadDataWithBaseURL(null, html, "text/html", "UTF-8", null)
+            binding.progressBar.visibility = View.GONE
+            binding.webView.visibility = View.VISIBLE
         }
     }
 

@@ -32,8 +32,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        QuizRepository.init(this)
-        FavoritesRepository.init(this)
+        //QuizRepository.init(this)
+        ResourceMapper.init(this)
         MusicPlayerManager.init(this)
 
         drawerLayout = findViewById(R.id.drawerLayout)
@@ -47,6 +47,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
         navigationView.setNavigationItemSelectedListener(this)
+        //FavoritesRepository.init(this)
 
         if (savedInstanceState == null) {
             loadFragment(HomeFragment())
@@ -76,6 +77,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
+    @Suppress("DEPRECATION")
     override fun onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START)
@@ -86,8 +88,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onResume() {
         super.onResume()
-        // Здесь можно запустить музыку, если нужно
-        // MusicPlayerManager.start(this, R.raw.some_track)
+        MusicPlayerManager.start(this, R.raw.lofiroomcafe_blooming_serenity_lofi_chill_beat_352429)
     }
 
     override fun onPause() {

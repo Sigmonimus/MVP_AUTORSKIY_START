@@ -9,6 +9,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
+import androidx.lifecycle.lifecycleScope
 import com.example.mvp_autorskiy_start.R
 import com.example.mvp_autorskiy_start.databinding.FragmentWorkDetailBinding
 import com.example.mvp_autorskiy_start.data.models.Work
@@ -16,6 +17,7 @@ import com.example.mvp_autorskiy_start.data.repository.WordRepository
 import com.example.mvp_autorskiy_start.ui.common.BaseFragment
 import com.example.mvp_autorskiy_start.ui.vocabulary.VocabularyFragment
 import com.google.android.material.tabs.TabLayoutMediator
+import kotlinx.coroutines.launch
 
 class WorkDetailFragment : BaseFragment<FragmentWorkDetailBinding>(FragmentWorkDetailBinding::inflate) {
 
@@ -80,7 +82,9 @@ class WorkDetailFragment : BaseFragment<FragmentWorkDetailBinding>(FragmentWorkD
             .setPositiveButton("Добавить") { _, _ ->
                 val word = input.text.toString().trim()
                 if (word.isNotEmpty()) {
-                    WordRepository.saveWord(word, work.id, work.title)
+                    lifecycleScope.launch {
+                        WordRepository.addWord(word)   // используем addWord, если есть
+                    }
                     Toast.makeText(requireContext(), "Слово «$word» сохранено", Toast.LENGTH_SHORT).show()
                 }
             }

@@ -21,7 +21,6 @@ class FavoriteEssaysAdapter(
 
     class EssayViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvTitle: TextView = itemView.findViewById(R.id.tvEssayTitle)
-        val tvTheme: TextView = itemView.findViewById(R.id.tvEssayTheme)
         val tvDate: TextView = itemView.findViewById(R.id.tvEssayDate)
         val btnDelete: ImageView = itemView.findViewById(R.id.btnDeleteEssay)
     }
@@ -35,8 +34,7 @@ class FavoriteEssaysAdapter(
     override fun onBindViewHolder(holder: EssayViewHolder, position: Int) {
         val essay = essays[position]
         holder.tvTitle.text = essay.title
-        holder.tvTheme.text = essay.theme.ifEmpty { "Без темы" }
-        holder.tvDate.text = dateFormat.format(Date(essay.date))
+        holder.tvDate.text = dateFormat.format(Date(essay.date.toLongOrNull() ?: 0L))
         holder.itemView.setOnClickListener { onItemClick(essay) }
         holder.btnDelete.setOnClickListener { onDeleteClick(essay) }
     }

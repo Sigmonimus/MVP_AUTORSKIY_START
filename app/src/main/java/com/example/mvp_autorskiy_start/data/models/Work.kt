@@ -9,5 +9,5 @@ data class Work(
     val title: String,
     val summary: String,
     val fullText: String,
-    val arguments: List<Argument>
+    val arguments: List<Argument> = emptyList()
 ) : Parcelable

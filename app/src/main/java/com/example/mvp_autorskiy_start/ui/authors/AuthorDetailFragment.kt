@@ -6,6 +6,7 @@ import com.example.mvp_autorskiy_start.databinding.FragmentAuthorDetailBinding
 import com.example.mvp_autorskiy_start.data.models.Author
 import com.example.mvp_autorskiy_start.ui.common.BaseFragment
 import com.google.android.material.tabs.TabLayoutMediator
+import com.example.mvp_autorskiy_start.data.repository.ResourceMapper
 
 class AuthorDetailFragment : BaseFragment<FragmentAuthorDetailBinding>(FragmentAuthorDetailBinding::inflate) {
 
@@ -19,7 +20,7 @@ class AuthorDetailFragment : BaseFragment<FragmentAuthorDetailBinding>(FragmentA
             arguments?.getParcelable<Author>("author")
         } ?: return
 
-        binding.ivAuthorImage.setImageResource(author.imageRes)
+        binding.ivAuthorImage.setImageResource(ResourceMapper.getDrawableResId(author.imageRes))
         binding.tvAuthorName.text = author.name
 
         val pagerAdapter = AuthorPagerAdapter(requireActivity(), author)

@@ -11,7 +11,6 @@ object WordRepository {
         current.add(word)
         App.dataStoreManager.setSavedWords(current)
     }
-
     suspend fun removeWord(word: String) {
         val current = App.dataStoreManager.getSavedWords().toMutableSet()
         current.remove(word)

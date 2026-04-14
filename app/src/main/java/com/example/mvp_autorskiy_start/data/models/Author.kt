@@ -9,6 +9,6 @@ data class Author(
     val name: String,
     val years: String,
     val bio: String,
-    val imageRes: Int,
-    val works: List<Work>
+    val imageRes: String,
+    val works: List<Work> = emptyList()
 ) : Parcelable

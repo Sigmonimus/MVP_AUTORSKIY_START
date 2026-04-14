@@ -23,13 +23,13 @@ object ArgumentsRepository {
         val id: Int,
         val name: String,
         val icon: String,
-        val argumentIds: List<Int>
+        val argumentIds: List<Int>? = emptyList() // ← защита от null
     ) {
         fun toCategory(): Category = Category(
             id = id,
             name = name,
             iconRes = ResourceMapper.getDrawableResId(icon),
-            argumentIds = argumentIds
+            argumentIds = argumentIds ?: emptyList()
         )
     }
 
@@ -40,7 +40,7 @@ object ArgumentsRepository {
         val author: String,
         val description: String,
         val fullText: String,
-        val categoryIds: List<Int>,
+        val categoryIds: List<Int>? = emptyList(), // ← защита от null
         val image: String? = null
     ) {
         fun toArgument(): Argument = Argument(
@@ -50,7 +50,7 @@ object ArgumentsRepository {
             author = author,
             description = description,
             fullText = fullText,
-            categoryIds = categoryIds,
+            categoryIds = categoryIds ?: emptyList(),
             imageRes = if (image != null) ResourceMapper.getDrawableResId(image) else 0
         )
     }

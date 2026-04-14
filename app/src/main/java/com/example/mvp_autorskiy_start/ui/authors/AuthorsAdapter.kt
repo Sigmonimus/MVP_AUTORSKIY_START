@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mvp_autorskiy_start.R
 import com.example.mvp_autorskiy_start.data.models.Author
+import com.example.mvp_autorskiy_start.data.repository.ResourceMapper
 
 class AuthorsAdapter(
     private val authors: List<Author>,
@@ -32,7 +33,8 @@ class AuthorsAdapter(
         holder.tvName.text = author.name
         holder.tvYears.text = author.years
         holder.tvBio.text = author.bio
-        holder.ivImage.setImageResource(author.imageRes)
+        // Используем ResourceMapper для получения ID ресурса по строке
+        holder.ivImage.setImageResource(ResourceMapper.getDrawableResId(author.imageRes))
         holder.itemView.setOnClickListener { onItemClick(author) }
     }
 

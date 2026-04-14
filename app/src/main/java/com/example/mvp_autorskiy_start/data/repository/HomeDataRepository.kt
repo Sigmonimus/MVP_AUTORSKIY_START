@@ -11,21 +11,21 @@ import java.util.*
 object HomeDataRepository {
 
     private data class Quote(val text: String, val author: String)
-    private data class Tip(val text: String)
 
     fun getRandomQuote(context: Context): String {
         val json = context.resources.openRawResource(R.raw.quotes).bufferedReader().use { it.readText() }
         val type = object : TypeToken<List<Quote>>() {}.type
-        val quotes: List<Quote> = Gson().fromJson(json, type)
-        val random = quotes.random()
+        val quotes: List<Quote> = Gson().fromJson(json, type) ?: emptyList()
+        val random = quotes.randomOrNull() ?: return "Цитата не найдена"
         return "«${random.text}»\n— ${random.author}"
     }
 
     fun getRandomTip(context: Context): String {
         val json = context.resources.openRawResource(R.raw.tips).bufferedReader().use { it.readText() }
-        val type = object : TypeToken<List<Tip>>() {}.type
-        val tips: List<Tip> = Gson().fromJson(json, type)
-        return tips.random().text
+        // Исправлено: парсим как список строк
+        val type = object : TypeToken<List<String>>() {}.type
+        val tips: List<String> = Gson().fromJson(json, type) ?: emptyList()
+        return if (tips.isNotEmpty()) tips.random() else "Совет дня отсутствует"
     }
 
     suspend fun updateStreak() {
@@ -40,7 +40,11 @@ object HomeDataRepository {
         } else {
             val lastDate = dateFormat.parse(lastOpen)
             val todayDate = dateFormat.parse(today)
-            val diff = (todayDate.time - lastDate.time) / (1000 * 60 * 60 * 24)
+            val diff = if (lastDate != null && todayDate != null) {
+                (todayDate.time - lastDate.time) / (1000 * 60 * 60 * 24)
+            } else {
+                2L
+            }
 
             when {
                 diff == 0L -> return

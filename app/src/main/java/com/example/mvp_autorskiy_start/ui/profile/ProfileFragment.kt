@@ -24,13 +24,20 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(FragmentProfileBind
 
     private var currentUserName: String = ""
     private var currentUserEmail: String = ""
+    private var isSpinnerInitialized = false
+    private var currentAvatarUri: String = ""
+    private var currentAvatarRes: String = ""
 
     private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
             lifecycleScope.launch {
-                App.dataStoreManager.setAvatarUri(it.toString())
-                App.dataStoreManager.setAvatarResName("")
-                loadAvatar()
+                val newUri = it.toString()
+                if (newUri != currentAvatarUri) {
+                    App.dataStoreManager.setAvatarUri(newUri)
+                    App.dataStoreManager.setAvatarResName("")
+                    currentAvatarUri = newUri
+                    loadAvatar()
+                }
             }
             requireContext().contentResolver.takePersistableUriPermission(it, Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
@@ -38,7 +45,6 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(FragmentProfileBind
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         loadProfileData()
         setupListeners()
     }
@@ -46,20 +52,22 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(FragmentProfileBind
     private fun loadProfileData() {
         lifecycleScope.launch {
             val prefs = App.dataStoreManager
-            currentUserName = prefs.getUserName()
-            currentUserEmail = prefs.getUserEmail()
-            binding.etName.setText(currentUserName)
-            binding.etEmail.setText(currentUserEmail)
+            currentUserName = prefs.getUserName().ifEmpty { "Гость" }
+            currentUserEmail = prefs.getUserEmail().ifEmpty { "email@example.com" }
+            binding.tvUserName.text = currentUserName
+            binding.tvEmail.text = currentUserEmail
             binding.switchNotifications.isChecked = prefs.isNotificationsEnabled()
             binding.switchMusic.isChecked = prefs.isMusicEnabled()
 
-            // Используем массив из ресурсов
-            val trackNames = resources.getStringArray(R.array.music_track_names)
-            val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, trackNames)
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            binding.spinnerMusicTrack.adapter = adapter
+            if (!isSpinnerInitialized) {
+                val trackNames = resources.getStringArray(R.array.music_track_names)
+                val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, trackNames)
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                binding.spinnerTrack.adapter = adapter
+                isSpinnerInitialized = true
+            }
             val currentTrack = prefs.getMusicTrack()
-            binding.spinnerMusicTrack.setSelection(currentTrack)
+            binding.spinnerTrack.setSelection(currentTrack)
 
             updateStatistics()
             loadAvatar()
@@ -67,9 +75,10 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(FragmentProfileBind
     }
 
     private fun setupListeners() {
-        binding.btnEditName.setOnClickListener { showEditNameDialog() }
-        binding.btnEditEmail.setOnClickListener { showEditEmailDialog() }
+        binding.tvUserName.setOnClickListener { showEditNameDialog() }
+        binding.llEmail.setOnClickListener { showEditEmailDialog() }
         binding.ivAvatar.setOnClickListener { showAvatarDialog() }
+        binding.btnAbout.setOnClickListener { showAboutDialog() }
 
         binding.switchNotifications.setOnCheckedChangeListener { _, isChecked ->
             lifecycleScope.launch { App.dataStoreManager.setNotificationsEnabled(isChecked) }
@@ -87,7 +96,7 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(FragmentProfileBind
             }
         }
 
-        binding.spinnerMusicTrack.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
+        binding.spinnerTrack.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: View?, position: Int, id: Long) {
                 lifecycleScope.launch {
                     App.dataStoreManager.setMusicTrack(position)
@@ -98,20 +107,42 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(FragmentProfileBind
             }
             override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {}
         }
+
+        binding.btnClearDrafts.setOnClickListener {
+            AlertDialog.Builder(requireContext())
+                .setTitle("Очистить черновики")
+                .setMessage("Вы уверены, что хотите удалить все черновики?")
+                .setPositiveButton("Да") { _, _ ->
+                    lifecycleScope.launch {
+                        App.dataStoreManager.setPracticeDrafts(emptyMap())
+                        App.dataStoreManager.setTotalDraftsCount(0)
+                        updateStatistics()
+                        Toast.makeText(requireContext(), "Черновики очищены", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                .setNegativeButton("Нет", null)
+                .show()
+        }
     }
 
     private fun showEditNameDialog() {
         val editText = EditText(requireContext())
         editText.setText(currentUserName)
+        editText.hint = "Введите имя"
         AlertDialog.Builder(requireContext())
-            .setTitle("Введите имя")
+            .setTitle("Редактировать имя")
             .setView(editText)
             .setPositiveButton("Сохранить") { _, _ ->
                 val newName = editText.text.toString().trim()
-                lifecycleScope.launch {
-                    App.dataStoreManager.setUserName(newName)
-                    currentUserName = newName
-                    binding.etName.setText(newName)
+                if (newName.isNotEmpty() && newName != currentUserName) {
+                    lifecycleScope.launch {
+                        App.dataStoreManager.setUserName(newName)
+                        currentUserName = newName
+                        binding.tvUserName.text = newName
+                        Toast.makeText(requireContext(), "Имя сохранено", Toast.LENGTH_SHORT).show()
+                    }
+                } else if (newName.isEmpty()) {
+                    Toast.makeText(requireContext(), "Имя не может быть пустым", Toast.LENGTH_SHORT).show()
                 }
             }
             .setNegativeButton("Отмена", null)
@@ -121,15 +152,21 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(FragmentProfileBind
     private fun showEditEmailDialog() {
         val editText = EditText(requireContext())
         editText.setText(currentUserEmail)
+        editText.hint = "email@example.com"
         AlertDialog.Builder(requireContext())
-            .setTitle("Введите email")
+            .setTitle("Редактировать email")
             .setView(editText)
             .setPositiveButton("Сохранить") { _, _ ->
                 val newEmail = editText.text.toString().trim()
-                lifecycleScope.launch {
-                    App.dataStoreManager.setUserEmail(newEmail)
-                    currentUserEmail = newEmail
-                    binding.etEmail.setText(newEmail)
+                if (newEmail.isNotEmpty() && newEmail.contains('@') && newEmail != currentUserEmail) {
+                    lifecycleScope.launch {
+                        App.dataStoreManager.setUserEmail(newEmail)
+                        currentUserEmail = newEmail
+                        binding.tvEmail.text = newEmail
+                        Toast.makeText(requireContext(), "Email сохранён", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(requireContext(), "Введите корректный email", Toast.LENGTH_SHORT).show()
                 }
             }
             .setNegativeButton("Отмена", null)
@@ -154,9 +191,13 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(FragmentProfileBind
 
     private fun setPresetAvatar(resName: String) {
         lifecycleScope.launch {
-            App.dataStoreManager.setAvatarResName(resName)
-            App.dataStoreManager.setAvatarUri("")
-            loadAvatar()
+            if (resName != currentAvatarRes) {
+                App.dataStoreManager.setAvatarResName(resName)
+                App.dataStoreManager.setAvatarUri("")
+                currentAvatarRes = resName
+                currentAvatarUri = ""
+                loadAvatar()
+            }
         }
     }
 
@@ -165,12 +206,14 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(FragmentProfileBind
         val uriString = prefs.getAvatarUri()
         val resName = prefs.getAvatarResName()
 
-        if (uriString.isNotEmpty()) {
+        if (uriString.isNotEmpty() && uriString != currentAvatarUri) {
+            currentAvatarUri = uriString
             Glide.with(this@ProfileFragment)
                 .load(Uri.parse(uriString))
                 .transform(CircleCrop())
                 .into(binding.ivAvatar)
-        } else {
+        } else if (resName.isNotEmpty() && resName != currentAvatarRes) {
+            currentAvatarRes = resName
             val resId = ResourceMapper.getDrawableResId(resName)
             Glide.with(this@ProfileFragment)
                 .load(resId)
@@ -182,12 +225,24 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(FragmentProfileBind
     private suspend fun updateStatistics() {
         val draftsCount = App.dataStoreManager.getTotalDraftsCount()
         val wordsCount = App.dataStoreManager.getTotalWordsCount()
-        binding.tvStats.text = "Черновиков: $draftsCount\nВсего слов: $wordsCount"
+        binding.tvDraftsCount.text = draftsCount.toString()
+        binding.tvTotalWords.text = wordsCount.toString()
+    }
+
+    private fun showAboutDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Об авторских правах")
+            .setMessage("Музыка: 'The Fallen' by Caleb Bryant (используется по лицензии Creative Commons Attribution)")
+            .setPositiveButton("OK", null)
+            .show()
     }
 
     private fun getTrackResId(position: Int): Int = when (position) {
         0 -> R.raw.lofiroomcafe_blooming_serenity_lofi_chill_beat_352429
         1 -> R.raw.paulyudin_inspiring_485937
-        else -> R.raw.purrplecat_after_the_rain_360275
+        2 -> R.raw.purrplecat_after_the_rain_360275
+        3 -> R.raw.universfield_quiet_reverie_268020
+        4 -> R.raw.vicatestudio_relaxing_chillhop_main_vrsion_173929
+        else -> R.raw.lofiroomcafe_blooming_serenity_lofi_chill_beat_352429
     }
 }

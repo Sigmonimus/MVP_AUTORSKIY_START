@@ -67,12 +67,15 @@ class PracticeFragment : BaseFragment<FragmentPracticeBinding>(FragmentPracticeB
         if (!wordCount) missing.add("объём ≥250 слов")
         if (!structure) missing.add("чёткая структура")
 
-        binding.tvHint.text = if (missing.isNotEmpty()) {
+        val message = if (missing.isNotEmpty()) {
             "⚠️ По критериям ФИПИ не хватает: ${missing.joinToString(", ")}"
         } else {
             "✅ Отлично! Сочинение соответствует основным требованиям."
         }
-        binding.tvHint.visibility = View.VISIBLE
+        if (binding.tvHint.text != message) {
+            binding.tvHint.text = message
+            binding.tvHint.visibility = View.VISIBLE
+        }
     }
 
     private fun setupButtons() {

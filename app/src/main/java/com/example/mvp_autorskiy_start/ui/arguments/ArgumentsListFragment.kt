@@ -17,12 +17,14 @@ class ArgumentsListFragment : BaseFragment<FragmentWorkArgumentsBinding>(Fragmen
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         argumentsList = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             arguments?.getParcelableArrayList("arguments", Argument::class.java) ?: emptyList()
         } else {
             @Suppress("DEPRECATION")
             arguments?.getParcelableArrayList<Argument>("arguments") ?: emptyList()
         }
+
         binding.rvArguments.layoutManager = LinearLayoutManager(requireContext())
         updateAdapter()
     }

@@ -11,6 +11,6 @@ data class Argument(
     val workTitle: String,
     val author: String,
     val fullText: String,
-    val categoryIds: List<Int>,
+    val categoryIds: List<Int> = emptyList(),
     val imageRes: Int = 0
 ) : Parcelable

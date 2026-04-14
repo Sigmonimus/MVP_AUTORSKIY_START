@@ -2,15 +2,9 @@ package com.example.mvp_autorskiy_start.utils
 
 import android.util.Xml
 import org.xmlpull.v1.XmlPullParser
-import java.io.InputStream
 import java.io.StringReader
 
 object FB2Parser {
-
-    fun parseToHtml(inputStream: InputStream): String {
-        val fb2Content = inputStream.bufferedReader().use { it.readText() }
-        return parseToHtml(fb2Content)
-    }
 
     fun parseToHtml(fb2Content: String): String {
         val parser = Xml.newPullParser()
@@ -35,6 +29,11 @@ object FB2Parser {
                             "v" -> htmlBody.append("<span class='verse'>")
                             "strong", "b" -> htmlBody.append("<b>")
                             "emphasis", "i" -> htmlBody.append("<i>")
+                            "subtitle" -> htmlBody.append("<div class='subtitle'>")
+                            "cite" -> htmlBody.append("<div class='cite'>")
+                            "epigraph" -> htmlBody.append("<div class='epigraph'>")
+                            "annotation" -> htmlBody.append("<div class='annotation'>")
+                            "empty-line" -> htmlBody.append("<br/>")
                         }
                     }
                 }
@@ -52,13 +51,17 @@ object FB2Parser {
                             "v" -> htmlBody.append("</span><br/>")
                             "strong", "b" -> htmlBody.append("</b>")
                             "emphasis", "i" -> htmlBody.append("</i>")
+                            "subtitle" -> htmlBody.append("</div>")
+                            "cite" -> htmlBody.append("</div>")
+                            "epigraph" -> htmlBody.append("</div>")
+                            "annotation" -> htmlBody.append("</div>")
                         }
                     }
                 }
                 XmlPullParser.TEXT -> {
                     if (insideBody) {
-                        val text = parser.text.trim()
-                        if (text.isNotEmpty()) {
+                        val text = parser.text
+                        if (text != null && text.trim().isNotEmpty()) {
                             htmlBody.append(text)
                         }
                     }
@@ -69,92 +72,82 @@ object FB2Parser {
 
         val htmlContent = htmlBody.toString()
         return """
-            <html>
-            <head>
-                <meta charset="UTF-8">
-                <style>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <style>
+                body {
+                    font-size: 24px !important;
+                    line-height: 1.6;
+                    padding: 16px;
+                    background-color: #F5F2EB;
+                    color: #4A2E1A;
+                    word-wrap: break-word;
+                }
+                h3 {
+                    font-size: 1.5em;
+                    margin-top: 1.2em;
+                    margin-bottom: 0.5em;
+                }
+                p {
+                    margin-bottom: 0.8em;
+                }
+                pre {
+                    background-color: #E8DFD1;
+                    padding: 12px;
+                    border-radius: 8px;
+                    font-family: monospace;
+                    white-space: pre-wrap;
+                }
+                .verse {
+                    display: block;
+                    margin-left: 1em;
+                }
+                .stanza {
+                    margin-bottom: 0.8em;
+                }
+                .subtitle {
+                    font-style: italic;
+                    margin-bottom: 0.5em;
+                }
+                .cite {
+                    font-style: italic;
+                    margin-left: 1em;
+                }
+                .epigraph {
+                    margin-left: 2em;
+                    margin-bottom: 1em;
+                    font-style: italic;
+                }
+                .annotation {
+                    margin: 1em 0;
+                    padding: 0.5em;
+                    background-color: #E8DFD1;
+                    border-radius: 8px;
+                }
+                @media (prefers-color-scheme: dark) {
                     body {
-                        font-family: sans-serif;
-                        font-size: 24px;
-                        line-height: 1.6;
-                        padding: 16px;
-                        margin: 0;
-                        background-color: #F5F2EB;
-                        color: #4A2E1A;
-                    }
-                    h3 {
-                        font-size: 1.5em;
-                        margin-top: 1.2em;
-                        margin-bottom: 0.5em;
-                    }
-                    p {
-                        margin-bottom: 0.8em;
-                    }
-                    pre {
-                        background-color: #E8DFD1;
-                        padding: 12px;
-                        border-radius: 8px;
-                        font-family: monospace;
-                        white-space: pre-wrap;
-                    }
-                    .verse {
-                        display: block;
-                        margin-left: 1em;
-                    }
-                    .stanza {
-                        margin-bottom: 0.8em;
-                    }
-                    .subtitle {
-                        font-style: italic;
-                        margin-bottom: 0.5em;
-                    }
-                    .cite {
-                        font-style: italic;
-                        margin-left: 1em;
-                    }
-                    .epigraph {
-                        margin-left: 2em;
-                        margin-bottom: 1em;
-                        font-style: italic;
+                        background-color: #1E1A16;
+                        color: #F5F2EB;
                     }
                     .annotation {
-                        margin: 1em 0;
-                        padding: 0.5em;
-                        background-color: #E8DFD1;
-                        border-radius: 8px;
+                        background-color: #2D2924;
+                    }
+                    pre {
+                        background-color: #2D2924;
                     }
                     .highlight {
                         background-color: #FFEB3B !important;
                         border-radius: 4px;
                         padding: 0 2px;
                     }
-                    @media (prefers-color-scheme: dark) {
-                        body {
-                            background-color: #1E1A16;
-                            color: #F5F2EB;
-                        }
-                        .annotation {
-                            background-color: #2D2924;
-                        }
-                        pre {
-                            background-color: #2D2924;
-                        }
-                    }
-                </style>
-            </head>
-            <body>
-                $htmlContent
-            </body>
-            </html>
+                }
+            </style>
+        </head>
+        <body>
+            $htmlContent
+        </body>
+        </html>
         """.trimIndent()
-    }
-
-    fun highlightWords(html: String, words: Set<String>): String {
-        var result = html
-        for (word in words) {
-            val regex = Regex("""(?<=[^>]|^)($word)(?=[^<]|$)""", RegexOption.IGNORE_CASE)
-            result = regex.replace(result) { "<span class='highlight'>${it.value}</span>" }
-        }
-        return result
     }
 }

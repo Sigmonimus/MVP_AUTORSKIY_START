@@ -1,15 +1,19 @@
 package com.example.mvp_autorskiy_start.ui.home
 
+import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.mvp_autorskiy_start.App
 import com.example.mvp_autorskiy_start.R
+import com.example.mvp_autorskiy_start.data.repository.HomeDataRepository
 import com.example.mvp_autorskiy_start.databinding.FragmentHomeBinding
+import com.example.mvp_autorskiy_start.ui.calendar.CalendarFragment
 import com.example.mvp_autorskiy_start.ui.common.BaseFragment
 import com.example.mvp_autorskiy_start.ui.profile.ProfileFragment
-import com.example.mvp_autorskiy_start.data.repository.HomeDataRepository
 import kotlinx.coroutines.launch
 
 class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::inflate) {
@@ -33,6 +37,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
         loadRandomIllustration()
         setupSettingsClick()
         updateStreak()
+        setupStreakClickListener()
         startEntranceAnimation()
     }
 
@@ -75,6 +80,26 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
             val best = HomeDataRepository.getBestStreak()
             binding.currentStreak.text = "🔥 $current"
             binding.bestStreak.text = "🏆 $best"
+        }
+    }
+
+    private fun setupStreakClickListener() {
+        var clickCount = 0
+        val handler = Handler(Looper.getMainLooper())
+        binding.currentStreak.setOnClickListener {
+            clickCount++
+            handler.removeCallbacksAndMessages(null)
+            handler.postDelayed({
+                clickCount = 0
+            }, 500)
+            if (clickCount == 3) {
+                clickCount = 0
+                val fragment = CalendarFragment()
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.fragmentContainer, fragment)
+                    .addToBackStack(null)
+                    .commit()
+            }
         }
     }
 

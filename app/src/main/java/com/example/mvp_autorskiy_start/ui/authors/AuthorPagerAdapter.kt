@@ -4,6 +4,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.mvp_autorskiy_start.data.models.Author
+import com.example.mvp_autorskiy_start.ui.arguments.ArgumentsListFragment
 
 class AuthorPagerAdapter(activity: FragmentActivity, private val author: Author) :
     FragmentStateAdapter(activity) {
