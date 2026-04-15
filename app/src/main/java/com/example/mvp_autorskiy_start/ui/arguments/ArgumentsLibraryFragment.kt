@@ -117,10 +117,7 @@ class ArgumentsLibraryFragment : BaseFragment<FragmentArgumentsLibraryBinding>(F
     }
 
     private fun showArgumentDialog(argument: Argument) {
-        android.app.AlertDialog.Builder(requireContext())
-            .setTitle(argument.title)
-            .setMessage(argument.description)
-            .setPositiveButton("OK", null)
-            .show()
+        val dialog = ArgumentReaderDialogFragment.newInstance(argument)
+        dialog.show(parentFragmentManager, ArgumentReaderDialogFragment.TAG)
     }
 }

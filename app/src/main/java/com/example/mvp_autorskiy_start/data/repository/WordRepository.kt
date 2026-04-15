@@ -16,4 +16,11 @@ object WordRepository {
         current.remove(word)
         App.dataStoreManager.setSavedWords(current)
     }
+    data class SavedWord(
+        val word: String,
+        val workId: Int,
+        val workTitle: String,
+        val definition: String = "",
+        val timestamp: Long = System.currentTimeMillis()
+    )
 }

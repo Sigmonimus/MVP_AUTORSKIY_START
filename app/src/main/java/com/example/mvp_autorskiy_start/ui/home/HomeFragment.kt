@@ -44,7 +44,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(FragmentHomeBinding::infl
     private fun loadUserInfo() {
         lifecycleScope.launch {
             val userName = App.dataStoreManager.getUserName()
-            binding.greetingText.text = "С возвращением, \n$userName!"
+            val displayName = if (userName.isBlank()) "Гость" else userName
+            binding.greetingText.text = "С возвращением, \n$displayName!"
         }
     }
 

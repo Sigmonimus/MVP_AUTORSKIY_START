@@ -1,6 +1,7 @@
 package com.example.mvp_autorskiy_start.ui.test
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
@@ -31,8 +32,19 @@ class TestMenuFragment : BaseFragment<FragmentTestMenuBinding>(FragmentTestMenuB
     private fun loadQuizzes() {
         lifecycleScope.launch {
             val quizzes = QuizRepository.loadQuizzes(requireContext())
-            pathMapView.setQuizzes(quizzes)
+            Log.d("TestMenu", "Loaded ${quizzes.size} quizzes")
+            if (quizzes.isNotEmpty()) {
+                pathMapView.setQuizzes(quizzes)
+                // Принудительно пересчитываем размеры View
+                pathMapView.post {
+                    pathMapView.requestLayout()
+                    pathMapView.invalidate()
+                }
+            } else {
+                Log.e("TestMenu", "No quizzes loaded")
+            }
             pathMapView.setOnQuizClickListener { quiz ->
+                Log.d("TestMenu", "Quiz clicked: ${quiz.title}")
                 val fragment = TestFragment.newInstance(ArrayList(quiz.questions), quiz.id)
                 parentFragmentManager.beginTransaction()
                     .setCustomAnimations(

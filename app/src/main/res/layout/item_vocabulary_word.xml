@@ -32,19 +32,27 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
-                android:textColor="@android:color/darker_gray" />
+                android:textColor="@android:color/darker_gray"
+                android:visibility="gone" />
 
         </LinearLayout>
 
-        <ImageView
+        <ImageButton
+            android:id="@+id/btnDefinition"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_info"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Определение" />
+
+        <ImageButton
             android:id="@+id/btnDelete"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:src="@drawable/outline_delete_24"
             android:tint="?attr/colorError"
-            android:padding="4dp"
-            android:background="?android:attr/selectableItemBackgroundBorderless" />
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Удалить" />
 
     </LinearLayout>
-
 </androidx.cardview.widget.CardView>

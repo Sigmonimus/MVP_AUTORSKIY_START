@@ -2,13 +2,13 @@ package com.example.mvp_autorskiy_start.ui.favorites
 
 import android.os.Bundle
 import android.view.View
-import android.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mvp_autorskiy_start.R
 import com.example.mvp_autorskiy_start.data.repository.ArgumentsRepository
 import com.example.mvp_autorskiy_start.data.repository.FavoritesRepository
 import com.example.mvp_autorskiy_start.databinding.FragmentFavoriteArgumentsBinding
+import com.example.mvp_autorskiy_start.ui.arguments.ArgumentReaderDialogFragment
 import com.example.mvp_autorskiy_start.ui.arguments.ArgumentsAdapter
 import com.example.mvp_autorskiy_start.data.models.Argument
 import com.example.mvp_autorskiy_start.ui.common.BaseFragment
@@ -40,14 +40,15 @@ class FavoriteArgumentsFragment : BaseFragment<FragmentFavoriteArgumentsBinding>
                 binding.tvEmpty.visibility = View.GONE
                 binding.rvArguments.visibility = View.VISIBLE
                 binding.tvCount.text = getString(R.string.arguments_count, favoriteArguments.size)
+
                 binding.rvArguments.layoutManager = LinearLayoutManager(requireContext())
                 val adapter = ArgumentsAdapter(
                     arguments = favoriteArguments,
                     favoriteIds = favoriteIds,
                     onItemClick = { argument -> showArgumentDialog(argument) },
                     onFavoriteClick = { argument, isFavorite ->
-                        lifecycleScope.launch {
-                            if (!isFavorite) {
+                        if (!isFavorite) {
+                            lifecycleScope.launch {
                                 FavoritesRepository.removeFavoriteArgument(argument.id)
                                 loadData()
                             }
@@ -60,13 +61,7 @@ class FavoriteArgumentsFragment : BaseFragment<FragmentFavoriteArgumentsBinding>
     }
 
     private fun showArgumentDialog(argument: Argument) {
-        val fullText = argument.fullText.trim()
-        val isPlaceholder = fullText.startsWith("Полный текст") || fullText == "..." || fullText == "Полный текст..."
-        val message = if (fullText.isNotBlank() && !isPlaceholder) fullText else argument.description
-        AlertDialog.Builder(requireContext())
-            .setTitle(argument.title)
-            .setMessage(message)
-            .setPositiveButton("OK", null)
-            .show()
+        val dialog = ArgumentReaderDialogFragment.newInstance(argument)
+        dialog.show(parentFragmentManager, ArgumentReaderDialogFragment.TAG)
     }
 }

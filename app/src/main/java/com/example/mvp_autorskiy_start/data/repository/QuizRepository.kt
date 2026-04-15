@@ -27,7 +27,6 @@ object QuizRepository {
             val best = getBestScore(quiz.id)
             val completed = isQuizCompleted(quiz.id)
             val unlocked = isQuizUnlocked(quiz.id)
-            // Принудительно задаём difficulty, если null
             val safeDifficulty = quiz.difficulty ?: Difficulty.MEDIUM
             loadedQuizzes.add(
                 Quiz(

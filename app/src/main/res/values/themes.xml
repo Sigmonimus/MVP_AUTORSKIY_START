@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Theme.AvtorskiyStart" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Основные цвета -->
+        <!-- Основные цвета для тёмной темы -->
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryVariant">@color/primary_dark</item>
         <item name="colorOnPrimary">@color/white</item>
@@ -21,15 +21,18 @@
         <item name="android:statusBarColor">@color/primary_dark</item>
     </style>
 
+    <!-- Переопределяем стили текста для тёмной темы (цвета уже подхватятся из ?android:attr/textColorPrimary) -->
     <style name="TextAppearance.AvtorskiyStart.ExpandedTitle" parent="TextAppearance.MaterialComponents.Headline4">
         <item name="android:textSize">28sp</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">?android:attr/textColorPrimary</item>   <!-- адаптивный цвет -->
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
     </style>
 
     <style name="TextAppearance.AvtorskiyStart.CollapsedTitle" parent="TextAppearance.MaterialComponents.Headline6">
         <item name="android:textSize">20sp</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">?android:attr/textColorPrimary</item>   <!-- адаптивный цвет -->
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+        <item name="android:windowEnterAnimation">@anim/dialog_enter</item>
+        <item name="android:windowExitAnimation">@anim/dialog_exit</item>
     </style>
 </resources>

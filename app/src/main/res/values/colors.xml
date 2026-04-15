@@ -8,4 +8,13 @@
     <color name="window_background">#F5F2EB</color>
     <color name="correct_green">#6A994E</color>
     <color name="wrong_red">#D97A4A</color>
+
+    <!-- Цвета для удобного чтения -->
+    <color name="reading_background">#FAF8F5</color>
+    <color name="reading_text">#2C2416</color>
+    <color name="reading_title">#1A1408</color>
+    <color name="reading_accent">#8B5A2B</color>
+    <color name="reading_divider">#D4C4A8</color>
+    <color name="reading_subtitle">#6B5B4A</color>
+    <color name="reading_dropcap">#A67C27</color>
 </resources>
