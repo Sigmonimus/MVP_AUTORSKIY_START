@@ -33,18 +33,9 @@ class TestMenuFragment : BaseFragment<FragmentTestMenuBinding>(FragmentTestMenuB
         lifecycleScope.launch {
             val quizzes = QuizRepository.loadQuizzes(requireContext())
             Log.d("TestMenu", "Loaded ${quizzes.size} quizzes")
-            if (quizzes.isNotEmpty()) {
-                pathMapView.setQuizzes(quizzes)
-                // Принудительно пересчитываем размеры View
-                pathMapView.post {
-                    pathMapView.requestLayout()
-                    pathMapView.invalidate()
-                }
-            } else {
-                Log.e("TestMenu", "No quizzes loaded")
-            }
+            pathMapView.setQuizzes(quizzes)
             pathMapView.setOnQuizClickListener { quiz ->
-                Log.d("TestMenu", "Quiz clicked: ${quiz.title}")
+                Log.d("TestMenu", "Clicked on ${quiz.title}")
                 val fragment = TestFragment.newInstance(ArrayList(quiz.questions), quiz.id)
                 parentFragmentManager.beginTransaction()
                     .setCustomAnimations(
@@ -62,6 +53,7 @@ class TestMenuFragment : BaseFragment<FragmentTestMenuBinding>(FragmentTestMenuB
 
     override fun onResume() {
         super.onResume()
+        // Обновляем карту при возврате из теста
         loadQuizzes()
     }
 }

@@ -52,6 +52,7 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(FragmentProfileBind
     private fun loadProfileData() {
         lifecycleScope.launch {
             val prefs = App.dataStoreManager
+            // Значения по умолчанию
             currentUserName = prefs.getUserName().ifEmpty { "Гость" }
             currentUserEmail = prefs.getUserEmail().ifEmpty { "email@example.com" }
             binding.tvUserName.text = currentUserName
@@ -76,7 +77,7 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(FragmentProfileBind
 
     private fun setupListeners() {
         binding.tvUserName.setOnClickListener { showEditNameDialog() }
-        binding.llEmail.setOnClickListener { showEditEmailDialog() }
+        binding.tvEmail.setOnClickListener { showEditEmailDialog() }
         binding.ivAvatar.setOnClickListener { showAvatarDialog() }
         binding.btnAbout.setOnClickListener { showAboutDialog() }
 
@@ -210,6 +211,8 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(FragmentProfileBind
             currentAvatarUri = uriString
             Glide.with(this@ProfileFragment)
                 .load(Uri.parse(uriString))
+                .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
                 .transform(CircleCrop())
                 .into(binding.ivAvatar)
         } else if (resName.isNotEmpty() && resName != currentAvatarRes) {
@@ -217,6 +220,8 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(FragmentProfileBind
             val resId = ResourceMapper.getDrawableResId(resName)
             Glide.with(this@ProfileFragment)
                 .load(resId)
+                .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
                 .transform(CircleCrop())
                 .into(binding.ivAvatar)
         }
@@ -230,11 +235,8 @@ class ProfileFragment : BaseFragment<FragmentProfileBinding>(FragmentProfileBind
     }
 
     private fun showAboutDialog() {
-        AlertDialog.Builder(requireContext())
-            .setTitle("Об авторских правах")
-            .setMessage("Музыка: 'The Fallen' by Caleb Bryant (используется по лицензии Creative Commons Attribution)")
-            .setPositiveButton("OK", null)
-            .show()
+        val dialog = AboutDialogFragment.newInstance()
+        dialog.show(parentFragmentManager, AboutDialogFragment.TAG)
     }
 
     private fun getTrackResId(position: Int): Int = when (position) {

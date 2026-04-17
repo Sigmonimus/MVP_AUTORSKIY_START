@@ -9,14 +9,14 @@
         android:id="@+id/tvEmpty"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Словарь пуст. Выделите слово в тексте, чтобы добавить."
         android:gravity="center"
-        android:visibility="gone" />
+        android:text="Словарь пуст"
+        android:visibility="gone"
+        android:textSize="18sp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvWords"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone" />
+        android:layout_height="match_parent" />
 
 </LinearLayout>

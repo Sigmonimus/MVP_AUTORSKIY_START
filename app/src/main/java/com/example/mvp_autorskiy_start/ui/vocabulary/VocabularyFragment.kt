@@ -1,6 +1,5 @@
 package com.example.mvp_autorskiy_start.ui.vocabulary
 
-import android.app.AlertDialog
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.lifecycleScope
@@ -10,7 +9,6 @@ import com.example.mvp_autorskiy_start.databinding.FragmentVocabularyBinding
 import com.example.mvp_autorskiy_start.ui.common.BaseFragment
 import com.example.mvp_autorskiy_start.network.DictionaryRepository
 import kotlinx.coroutines.launch
-
 
 class VocabularyFragment : BaseFragment<FragmentVocabularyBinding>(FragmentVocabularyBinding::inflate) {
 
@@ -50,11 +48,8 @@ class VocabularyFragment : BaseFragment<FragmentVocabularyBinding>(FragmentVocab
     private fun showDefinition(word: String) {
         lifecycleScope.launch {
             val definition = DictionaryRepository.getDefinition(word)
-            AlertDialog.Builder(requireContext())
-                .setTitle(word)
-                .setMessage(definition)
-                .setPositiveButton("OK") { _, _ -> }
-                .show()
+            val dialog = DefinitionReaderDialogFragment.newInstance(word, definition)
+            dialog.show(parentFragmentManager, DefinitionReaderDialogFragment.TAG)
         }
     }
 }

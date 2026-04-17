@@ -3,7 +3,6 @@ package com.example.mvp_autorskiy_start.ui.vocabulary
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mvp_autorskiy_start.R
@@ -38,8 +37,8 @@ class WordAdapter(
         private val onDelete: (String) -> Unit
     ) : RecyclerView.ViewHolder(itemView) {
         private val tvWord: TextView = itemView.findViewById(R.id.tvWord)
-        private val btnDefinition: ImageButton = itemView.findViewById(R.id.btnDefinition)
-        private val btnDelete: ImageButton = itemView.findViewById(R.id.btnDelete)
+        private val btnDefinition: View = itemView.findViewById(R.id.btnDefinition)
+        private val btnDelete: View = itemView.findViewById(R.id.btnDelete)
 
         fun bind(word: String) {
             tvWord.text = word
