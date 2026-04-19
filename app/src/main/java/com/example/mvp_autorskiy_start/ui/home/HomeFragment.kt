@@ -1,6 +1,5 @@
 package com.example.mvp_autorskiy_start.ui.home
 
-import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper

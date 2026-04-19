@@ -9,19 +9,21 @@ import retrofit2.http.Path
 import java.net.URLEncoder
 import java.util.concurrent.TimeUnit
 
-interface RuwikiApiService {
+// Интерфейс объявлен здесь, чтобы не было конфликта с отдельным файлом
+// Если у вас есть отдельный файл WikipediaApiService.kt, удалите его или закомментируйте этот интерфейс.
+interface WikipediaApiService {
     @GET("page/summary/{title}")
-    suspend fun getSummary(@Path("title", encoded = true) title: String): RuwikiSummary
+    suspend fun getSummary(@Path("title", encoded = true) title: String): WikipediaSummary
 }
 
-data class RuwikiSummary(
+data class WikipediaSummary(
     val title: String,
     val extract: String?,
     val extract_html: String?
 )
 
 object DictionaryRepository {
-    private const val BASE_URL = "https://ru.ruwiki.ru/api/rest_v1/"
+    private const val BASE_URL = "https://ru.wikipedia.org/api/rest_v1/"
     private const val TAG = "DictionaryRepo"
 
     private val client = OkHttpClient.Builder()
@@ -41,44 +43,53 @@ object DictionaryRepository {
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-    private val api = retrofit.create(RuwikiApiService::class.java)
+    private val api = retrofit.create(WikipediaApiService::class.java)
 
-    // Локальный словарь (fallback)
+    // Локальный словарь (офлайн, мгновенно)
     private val localDefinitions = mapOf(
         "гоголь" to "Николай Васильевич Гоголь (1809–1852) – русский писатель, драматург, критик. Автор «Мёртвых душ», «Ревизора», «Шинели».",
-        "пушкин" to "Александр Сергеевич Пушкин (1799–1837) – великий русский поэт, основоположник современного русского литературного языка.",
-        "толстой" to "Лев Николаевич Толстой (1828–1910) – русский писатель, мыслитель. Автор «Войны и мира», «Анны Карениной».",
-        "достоевский" to "Фёдор Михайлович Достоевский (1821–1881) – русский писатель. Автор «Преступления и наказания», «Идиота», «Братьев Карамазовых».",
-        "чехов" to "Антон Павлович Чехов (1860–1904) – русский писатель, драматург. Автор «Вишнёвого сада», «Чайки», рассказов.",
+        "пушкин" to "Александр Сергеевич Пушкин (1799–1837) – великий русский поэт, основоположник современного русского литературного языка. Автор «Евгения Онегина», «Капитанской дочки».",
+        "толстой" to "Лев Николаевич Толстой (1828–1910) – русский писатель, мыслитель. Автор «Войны и мира», «Анны Карениной», «Воскресения».",
+        "достоевский" to "Фёдор Михайлович Достоевский (1821–1881) – русский писатель, мыслитель. Автор «Преступления и наказания», «Идиота», «Братьев Карамазовых».",
         "тургенев" to "Иван Сергеевич Тургенев (1818–1883) – русский писатель-реалист. Автор «Отцов и детей», «Записок охотника».",
         "лермонтов" to "Михаил Юрьевич Лермонтов (1814–1841) – русский поэт, прозаик. Автор «Героя нашего времени», «Мцыри».",
-        "булгаков" to "Михаил Афанасьевич Булгаков (1891–1940) – русский писатель. Автор «Мастера и Маргариты», «Собачьего сердца»."
+        "чехов" to "Антон Павлович Чехов (1860–1904) – русский писатель, драматург. Автор «Вишнёвого сада», «Чайки», рассказов.",
+        "булгаков" to "Михаил Афанасьевич Булгаков (1891–1940) – русский писатель. Автор «Мастера и Маргариты», «Собачьего сердца».",
+        "солженицын" to "Александр Исаевич Солженицын (1918–2008) – русский писатель, лауреат Нобелевской премии. Автор «Одного дня Ивана Денисовича», «Матрёниного двора».",
+        "море" to "Море – часть Мирового океана, обособленная сушей или возвышениями подводного рельефа.",
+        "любовь" to "Любовь – чувство глубокой привязанности и устремлённости к другому человеку или объекту.",
+        "честь" to "Честь – комплекс моральных качеств, вызывающих уважение и гордость; достоинство, доброе имя.",
+        "дружба" to "Дружба – личные бескорыстные взаимоотношения между людьми, основанные на доверии, искренности, общих интересах.",
+        "война" to "Война – организованная вооружённая борьба между государствами, народами или социальными группами.",
+        "семья" to "Семья – основанная на браке или кровном родстве малая группа, члены которой связаны общностью быта, взаимной помощью и моральной ответственностью."
     )
 
     suspend fun getDefinition(word: String): String {
-        // 1. Сначала проверяем локальный словарь
-        val lowerWord = word.lowercase()
+        val lowerWord = word.trim().lowercase()
+        // 1. Локальный словарь
         localDefinitions[lowerWord]?.let {
             Log.d(TAG, "Локальное определение для $word")
             return it
         }
 
-        // 2. Пробуем Рувики
+        // 2. Fallback на Википедию
         val candidates = generateCandidates(word)
         for (candidate in candidates) {
             try {
                 val encoded = URLEncoder.encode(candidate, "UTF-8")
-                Log.d(TAG, "Запрос к Рувики: $encoded")
+                Log.d(TAG, "Запрос к Wikipedia: $encoded")
                 val response = api.getSummary(encoded)
                 if (!response.extract.isNullOrBlank()) {
                     val definition = response.extract.trim().replace(Regex("\\s+"), " ")
-                    Log.d(TAG, "Найдено в Рувики: $candidate")
+                    Log.d(TAG, "Найдено в Wikipedia: $candidate")
                     return definition
                 }
             } catch (e: retrofit2.HttpException) {
-                if (e.code() != 404) Log.e(TAG, "HTTP ${e.code()}")
+                if (e.code() != 404) {
+                    Log.e(TAG, "HTTP ${e.code()}: ${e.message()}")
+                }
             } catch (e: Exception) {
-                Log.e(TAG, "Ошибка", e)
+                Log.e(TAG, "Ошибка запроса", e)
             }
         }
         return "Определение не найдено"
@@ -88,18 +99,19 @@ object DictionaryRepository {
         val trimmed = word.trim()
         val candidates = mutableListOf<String>()
         candidates.add(trimmed.replaceFirstChar { it.uppercase() })
-        // Добавляем полное имя для известных писателей (если ввели только фамилию)
-        val fullNames = mapOf(
+
+        val specialMapping = mapOf(
             "гоголь" to "Николай Васильевич Гоголь",
             "пушкин" to "Александр Сергеевич Пушкин",
             "толстой" to "Лев Николаевич Толстой",
             "достоевский" to "Фёдор Михайлович Достоевский",
-            "чехов" to "Антон Павлович Чехов",
             "тургенев" to "Иван Сергеевич Тургенев",
             "лермонтов" to "Михаил Юрьевич Лермонтов",
-            "булгаков" to "Михаил Афанасьевич Булгаков"
+            "чехов" to "Антон Павлович Чехов",
+            "булгаков" to "Михаил Афанасьевич Булгаков",
+            "солженицын" to "Александр Исаевич Солженицын"
         )
-        fullNames[trimmed.lowercase()]?.let {
+        specialMapping[trimmed.lowercase()]?.let {
             candidates.add(it)
             candidates.add(it.replace(" ", "_"))
         }

@@ -7,18 +7,16 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import com.example.mvp_autorskiy_start.data.repository.FavoritesRepository
-import com.example.mvp_autorskiy_start.data.repository.QuizRepository
-import com.example.mvp_autorskiy_start.ui.test.TestMenuFragment
+import com.example.mvp_autorskiy_start.data.repository.ResourceMapper
 import com.example.mvp_autorskiy_start.ui.arguments.ArgumentsLibraryFragment
 import com.example.mvp_autorskiy_start.ui.authors.AuthorsFragment
 import com.example.mvp_autorskiy_start.ui.favorites.FavoritesFragment
 import com.example.mvp_autorskiy_start.ui.home.HomeFragment
 import com.example.mvp_autorskiy_start.ui.practice.PracticeFragment
 import com.example.mvp_autorskiy_start.ui.profile.ProfileFragment
+import com.example.mvp_autorskiy_start.ui.test.TestMenuFragment
 import com.example.mvp_autorskiy_start.ui.theory.TheoryFragment
 import com.example.mvp_autorskiy_start.utils.MusicPlayerManager
-import com.example.mvp_autorskiy_start.data.repository.ResourceMapper
 import com.example.mvp_autorskiy_start.utils.SoundPlayer
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
@@ -32,7 +30,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        //QuizRepository.init(this)
+
         ResourceMapper.init(this)
         MusicPlayerManager.init(this)
 
@@ -47,7 +45,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
         navigationView.setNavigationItemSelectedListener(this)
-        //FavoritesRepository.init(this)
 
         if (savedInstanceState == null) {
             loadFragment(HomeFragment())
