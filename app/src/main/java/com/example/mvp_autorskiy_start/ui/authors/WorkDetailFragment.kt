@@ -44,7 +44,7 @@ class WorkDetailFragment : BaseFragment<FragmentWorkDetailBinding>(FragmentWorkD
                 return when (menuItem.itemId) {
                     R.id.action_vocabulary -> {
                         val fragment = VocabularyFragment()
-                        parentFragmentManager.beginTransaction()
+                        requireActivity().supportFragmentManager.beginTransaction()
                             .replace(R.id.fragmentContainer, fragment)
                             .addToBackStack(null)
                             .commit()
@@ -83,7 +83,7 @@ class WorkDetailFragment : BaseFragment<FragmentWorkDetailBinding>(FragmentWorkD
                 val word = input.text.toString().trim()
                 if (word.isNotEmpty()) {
                     lifecycleScope.launch {
-                        WordRepository.addWord(word)   // используем addWord, если есть
+                        WordRepository.addWord(word)
                     }
                     Toast.makeText(requireContext(), "Слово «$word» сохранено", Toast.LENGTH_SHORT).show()
                 }

@@ -17,4 +17,8 @@
     <color name="reading_divider">#D4C4A8</color>
     <color name="reading_subtitle">#6B5B4A</color>
     <color name="reading_dropcap">#A67C27</color>
+
+    <color name="calendar_default">#EEEEEE</color>
+    <color name="calendar_visited">#81C784</color>
+    <color name="calendar_today">#FFB74D</color>
 </resources>

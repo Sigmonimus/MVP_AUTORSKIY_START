@@ -1,31 +1,47 @@
 package com.example.mvp_autorskiy_start.ui.home
 
-import androidx.lifecycle.LiveData
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.mvp_autorskiy_start.App
 import com.example.mvp_autorskiy_start.data.repository.HomeDataRepository
 import kotlinx.coroutines.launch
 
-data class Quote(val text: String, val author: String)
+class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
-class HomeViewModel : ViewModel() {
+    val quoteText = MutableLiveData<String>()
+    val quoteAuthor = MutableLiveData<String>()
+    val tip = MutableLiveData<String>()
+    val currentStreak = MutableLiveData<Int>()
+    val bestStreak = MutableLiveData<Int>()
+    val showFireworks = MutableLiveData<Boolean>()
 
-    private val _randomQuote = MutableLiveData<Quote>()
-    val randomQuote: LiveData<Quote> = _randomQuote
+    private val context = getApplication<Application>().applicationContext
 
-    private val _randomTip = MutableLiveData<String>()
-    val randomTip: LiveData<String> = _randomTip
+    init {
+        loadQuoteAndTip()
+    }
 
-    fun loadData(context: android.content.Context) {
+    private fun loadQuoteAndTip() {
+        val (text, author) = HomeDataRepository.getRandomQuote(context)
+        quoteText.value = "«$text»"
+        quoteAuthor.value = "— $author"
+        tip.value = HomeDataRepository.getRandomTip(context)
+    }
+
+    fun updateStreak() {
         viewModelScope.launch {
-            val quoteText = HomeDataRepository.getRandomQuote(context)
-            val parts = quoteText.split("\n— ")
-            val quote = if (parts.size == 2) Quote(parts[0].trim('"'), parts[1]) else Quote(quoteText, "")
-            _randomQuote.postValue(quote)
+            val shouldCelebrate = HomeDataRepository.updateStreak()
+            val newStreak = App.dataStoreManager.getCurrentStreak()
+            currentStreak.value = newStreak
+            bestStreak.value = App.dataStoreManager.getBestStreak()
 
-            val tip = HomeDataRepository.getRandomTip(context)
-            _randomTip.postValue(tip)
+            if (shouldCelebrate) {
+                showFireworks.value = true
+            } else {
+                showFireworks.value = false
+            }
         }
     }
 }

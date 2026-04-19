@@ -8,4 +8,7 @@
     <color name="window_background">#1E1A16</color>
     <color name="correct_green">#8BC34A</color>
     <color name="wrong_red">#FF8A65</color>
+    <color name="calendar_default">#EEEEEE</color>
+    <color name="calendar_visited">#81C784</color>
+    <color name="calendar_today">#FFB74D</color>
 </resources>

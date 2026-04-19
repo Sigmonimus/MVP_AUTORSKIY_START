@@ -29,7 +29,7 @@ class AuthorWorksFragment : BaseFragment<FragmentAuthorWorksBinding>(FragmentAut
 
         val adapter = WorksAdapter(works) { work ->
             val fragment = WorkDetailFragment.newInstance(work)
-            parentFragmentManager.beginTransaction()
+            requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.fragmentContainer, fragment)
                 .addToBackStack(null)
                 .commit()
